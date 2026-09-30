@@ -1,0 +1,33 @@
+# Entorno dev local: Postgres 18 + PHP 8.2 (Apache), igual que flamenco.
+# Uso: docker compose -f infra/docker-compose.dev.yml up -d
+name: hobbystore-dev
+
+services:
+  db:
+    image: postgres:18
+    environment:
+      POSTGRES_DB: hobbystore_dev
+      POSTGRES_USER: hobby
+      POSTGRES_PASSWORD: hobby
+    ports:
+      - "5433:5432"
+    # PG18 cambió PGDATA a /var/lib/postgresql/18/docker: se monta el directorio padre.
+    volumes:
+      - pgdata:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hobby -d hobbystore_dev"]
+      interval: 5s
+      retries: 10
+
+  api:
+    build: ./php
+    ports:
+      - "8080:80"
+    volumes:
+      - ../backend_api:/var/www/app
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:

@@ -1,0 +1,21 @@
+name: otp_auth
+description: "Login por OTP (SMS) compartido entre las apps de celulares-platform."
+publish_to: 'none'
+version: 1.0.0
+
+environment:
+  sdk: ^3.12.1
+  flutter: ">=1.17.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Cliente HTTP hacia backend_flamenco/otp (request/verify/session/logout.php).
+  http: ^1.2.2
+  flutter_secure_storage: ^11.2.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0

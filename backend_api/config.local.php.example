@@ -1,0 +1,17 @@
+<?php
+
+declare(strict_types=1);
+
+// Copiar a config.local.php en ~/hobbystore/<env>/ (flamenco). No va a git.
+// En flamenco, Postgres se alcanza por socket local como el usuario marco
+// (dueño de gyros), así que no hace falta ni host ni password.
+return [
+    'env' => 'staging', // staging | prod
+    'db' => [
+        'dsn' => 'pgsql:dbname=gyros',
+        'user' => null,
+        'password' => null,
+        'schema' => 'hobbystore_staging', // hobbystore en prod
+    ],
+    'otp_session_url' => 'https://www.quanticasoft.com/otp/session.php',
+];
