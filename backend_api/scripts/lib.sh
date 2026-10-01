@@ -19,7 +19,9 @@ require_git_ref_for_env() {
   local env="$1"
   [[ "$env" == "dev" ]] && return 0
 
-  if [[ -n "$(git -C "$REPO_ROOT" status --porcelain)" ]]; then
+  # Lo no trackeado solo importa dentro de backend_api: es lo que rsync publicaría.
+  if [[ -n "$(git -C "$REPO_ROOT" status --porcelain --untracked-files=no)" \
+     || -n "$(git -C "$REPO_ROOT" ls-files --others --exclude-standard -- backend_api)" ]]; then
     echo "Hay cambios sin commitear. Abortando." >&2; exit 1
   fi
 
