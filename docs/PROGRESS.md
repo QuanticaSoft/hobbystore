@@ -11,18 +11,18 @@
   - Línea base de `gyros.public`: 40 relaciones.
   - Creados `~/hobbystore/{staging,prod}/config.local.php`.
   - Schema `hobbystore_staging` migrado (001).
-  - API desplegada en `/hobbystore/api-staging`: el routing responde, pero la BD da 503.
-- **Bloqueo:** SELinux impide el socket desde PHP-FPM. El usuario debe poner el password del rol `marco` en ambos `config.local.php` (TCP 127.0.0.1; ver `config.local.php.example`).
+  - API desplegada en `/hobbystore/api-staging`: `/v1/health` responde `db: ok` por TCP con password.
+  - Los `config.local.php` de staging y prod ya tienen el DSN TCP y el password.
 - **Siguiente paso:**
-  1. Verificar staging `/v1/health`.
-  2. Hacer el release `v0.0.1` y aplicar `migrate.sh prod` + `deploy.sh prod`.
-  3. Verificar que `public` no cambió.
+  1. Hacer el release `v0.0.1` y aplicar `migrate.sh prod` + `deploy.sh prod`.
+  2. Verificar que `public` no cambió.
+  3. Hacer push a GitHub.
   4. Cerrar la Fase 0.
 
 ## Estado por fase
 | Fase | Estado | Notas |
 |---|---|---|
-| 0 Fundaciones | 🔄 | Staging desplegado; falta el password de BD y prod |
+| 0 Fundaciones | 🔄 | Staging OK; falta prod, el push y la verificación de `public` |
 | 1 Login + esqueleto app | ⏳ | |
 | 2 Catálogo + Home | ⏳ | |
 | 3 Favoritos + Carrito | ⏳ | |
@@ -59,12 +59,11 @@
 - [x] `curl localhost:8080/v1/health` → `db: ok`, `schema: hobbystore`
 - [x] `migrate.sh dev` es idempotente (la segunda corrida aplica 0)
 - [x] `app_root.php` no es accesible por HTTP (403)
-- [ ] staging: `/hobbystore/api-staging/v1/health` → `schema: hobbystore_staging` (routing ✅, `/v1/config` ✅, `app_root.php` 403 ✅, BD ⛔ password)
+- [x] staging: `/hobbystore/api-staging/v1/health` → `db: ok`, `schema: hobbystore_staging`
 - [ ] prod: `/hobbystore/api/v1/health` → `schema: hobbystore`
 - [ ] Las tablas de `public` en gyros no cambian (conteo antes y después)
 
 ## Bloqueos / preguntas abiertas
-- **Password del rol `marco` para la API (TCP)**: lo configura el usuario en flamenco.
 - Aprobar las dependencias Flutter para Fase 1 y siguientes: `provider`, `url_launcher`, `image_picker`, `cached_network_image`.
 - Cuentas Google Play Console y Apple Developer (necesarias para la Fase 7; conviene tramitarlas antes).
 - Número demo para los revisores de Apple y Google: requiere un cambio en el gateway OTP de celulares-platform.
