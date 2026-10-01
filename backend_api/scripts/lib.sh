@@ -6,6 +6,20 @@ BACKEND_DIR="$REPO_ROOT/backend_api"
 REMOTE_HOST="flamenco"
 REMOTE_DB="gyros"
 
+# Una sola conexión SSH reutilizada por todo el script: flamenco rechaza a
+# veces conexiones nuevas seguidas (timeouts intermitentes en el puerto 22).
+SSH_OPTS=(-o BatchMode=yes -o ConnectTimeout=20 -o ControlMaster=auto
+          -o "ControlPath=$HOME/.ssh/cm-hobbystore-%r@%h:%p" -o ControlPersist=120)
+
+remote() {
+  local status=0
+  ssh "${SSH_OPTS[@]}" "$REMOTE_HOST" "$@" || status=$?
+  if [[ $status -eq 255 ]]; then
+    echo "No se pudo conectar a $REMOTE_HOST por SSH. Reintenta." >&2; exit 1
+  fi
+  return $status
+}
+
 schema_for_env() {
   case "$1" in
     dev|prod) echo "hobbystore" ;;
@@ -19,7 +33,9 @@ require_git_ref_for_env() {
   local env="$1"
   [[ "$env" == "dev" ]] && return 0
 
-  if [[ -n "$(git -C "$REPO_ROOT" status --porcelain)" ]]; then
+  # Lo no trackeado solo importa dentro de backend_api: es lo que rsync publicaría.
+  if [[ -n "$(git -C "$REPO_ROOT" status --porcelain --untracked-files=no)" \
+     || -n "$(git -C "$REPO_ROOT" ls-files --others --exclude-standard -- backend_api)" ]]; then
     echo "Hay cambios sin commitear. Abortando." >&2; exit 1
   fi
 
@@ -49,6 +65,6 @@ run_psql() {
     docker compose -f "$REPO_ROOT/infra/docker-compose.dev.yml" exec -T db \
       psql -X -q -v ON_ERROR_STOP=1 -U hobby -d hobbystore_dev "$@"
   else
-    ssh -o BatchMode=yes "$REMOTE_HOST" psql -X -q -v ON_ERROR_STOP=1 -d "$REMOTE_DB" "$@"
+    remote psql -X -q -v ON_ERROR_STOP=1 -d "$REMOTE_DB" "$@"
   fi
 }

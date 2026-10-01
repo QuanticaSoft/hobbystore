@@ -7,12 +7,22 @@
   - El repo se reestructuró como monorepo.
   - Docs, `otp_auth` copiado, entorno dev en Docker y API mínima (`/v1/health`, `/v1/config`) probada en local.
   - Scripts `migrate`, `deploy` y `backup` listos.
-- **Siguiente paso:** con confirmación del usuario, crear en flamenco los schemas y los `config.local.php`, desplegar staging y prod, verificar `/v1/health` y hacer push a GitHub (`main` + `develop`).
+- **En flamenco:**
+  - Línea base de `gyros.public`: 40 relaciones.
+  - Creados `~/hobbystore/{staging,prod}/config.local.php`.
+  - Schema `hobbystore_staging` migrado (001).
+  - API desplegada en `/hobbystore/api-staging`: `/v1/health` responde `db: ok` por TCP con password.
+  - Los `config.local.php` de staging y prod ya tienen el DSN TCP y el password.
+- **Siguiente paso:**
+  1. Hacer el release `v0.0.1` y aplicar `migrate.sh prod` + `deploy.sh prod`.
+  2. Verificar que `public` no cambió.
+  3. Hacer push a GitHub.
+  4. Cerrar la Fase 0.
 
 ## Estado por fase
 | Fase | Estado | Notas |
 |---|---|---|
-| 0 Fundaciones | 🔄 | Falta la parte en flamenco y GitHub |
+| 0 Fundaciones | 🔄 | Staging OK; falta prod, el push y la verificación de `public` |
 | 1 Login + esqueleto app | ⏳ | |
 | 2 Catálogo + Home | ⏳ | |
 | 3 Favoritos + Carrito | ⏳ | |
@@ -49,7 +59,7 @@
 - [x] `curl localhost:8080/v1/health` → `db: ok`, `schema: hobbystore`
 - [x] `migrate.sh dev` es idempotente (la segunda corrida aplica 0)
 - [x] `app_root.php` no es accesible por HTTP (403)
-- [ ] staging: `/hobbystore/api-staging/v1/health` → `schema: hobbystore_staging`
+- [x] staging: `/hobbystore/api-staging/v1/health` → `db: ok`, `schema: hobbystore_staging`
 - [ ] prod: `/hobbystore/api/v1/health` → `schema: hobbystore`
 - [ ] Las tablas de `public` en gyros no cambian (conteo antes y después)
 
@@ -66,4 +76,4 @@
 ## Versiones
 | Versión | Fecha | Entorno | Notas |
 |---|---|---|---|
-| — | — | — | Todavía no hay release |
+| v0.0.1 | 2026-09-30 | staging + prod | Fase 0: monorepo, API `/v1/health` y `/v1/config`, migración 001 |

@@ -2,6 +2,10 @@
 
 Formato: fecha, decisión y por qué. Las decisiones nuevas van arriba.
 
+## 2026-09-30: La API conecta a Postgres por TCP con password
+PHP-FPM no puede usar el socket Unix (`/run/postgresql`) porque SELinux, en modo Enforcing, devuelve "Permission denied". Por TCP en `127.0.0.1` sí se puede, pero exige password. El password del rol `marco` va solo en `~/hobbystore/<env>/config.local.php` (chmod 600) y nunca en git.
+Los scripts (`migrate`, `backup`) corren por SSH como `marco` y sí usan el socket.
+
 ## 2026-09-30: Código PHP fuera del docroot
 En flamenco el código va en `~/hobbystore/<env>/` y en `/webs/quanticasoft/hobbystore/<api|api-staging>/` solo se publica `public/`.
 **Por qué:** el pool PHP-FPM corre como `marco` y puede leer su home. Así `src/` y `config.local.php` nunca quedan expuestos, aunque un `.htaccess` falle.

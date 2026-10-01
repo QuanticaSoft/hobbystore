@@ -7,7 +7,13 @@ ENV="${1:-}"
 [[ "$ENV" == "staging" || "$ENV" == "prod" ]] || { echo "Uso: backup.sh staging|prod" >&2; exit 1; }
 SCHEMA="$(schema_for_env "$ENV")"
 
+exists="$(echo "SELECT 1 FROM pg_namespace WHERE nspname = '$SCHEMA';" | run_psql "$ENV" -At)"
+if [[ "$exists" != "1" ]]; then
+  echo "El schema $SCHEMA aún no existe: no hay nada que respaldar."
+  exit 0
+fi
+
 mkdir -p "$REPO_ROOT/backups"
 out="$REPO_ROOT/backups/${SCHEMA}-$(date +%Y%m%d-%H%M%S).dump"
-ssh -o BatchMode=yes "$REMOTE_HOST" pg_dump -d "$REMOTE_DB" -n "$SCHEMA" -Fc > "$out"
+remote pg_dump -d "$REMOTE_DB" -n "$SCHEMA" -Fc > "$out"
 echo "Backup: $out"
