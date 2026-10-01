@@ -76,4 +76,4 @@
 ## Versiones
 | Versión | Fecha | Entorno | Notas |
 |---|---|---|---|
-| — | — | — | Todavía no hay release |
+| v0.0.1 | 2026-09-30 | staging + prod | Fase 0: monorepo, API `/v1/health` y `/v1/config`, migración 001 |
