@@ -2,6 +2,17 @@
 
 Formato: fecha, decisión y por qué. Las decisiones nuevas van arriba.
 
+## 2026-09-30: Ids de la app y versión mínima de iOS
+- Android `applicationId` e iOS bundle id: `com.quanticasoft.hobbystore`. Nombre visible: "Hobby Store".
+- iOS mínimo 15.0, porque Xcode 27 no acepta un deployment target menor.
+- HTTP sin TLS solo para dev: en Android, `usesCleartextTraffic` en el manifest de **debug**; en iOS, `NSAllowsLocalNetworking` (solo red local).
+
+## 2026-09-30: Header `X-Dev-Phone` en dev
+**Por qué:** con OTP mock en la app, el token no existe en ningún servidor y la API dev no tiene contra qué validarlo. La app envía el teléfono del login mock y la API lo acepta solo si `otp_session_url = mock` **y** `env = dev`; en cualquier otro caso lanza un error.
+
+## 2026-09-30: Usuario creado en el primer `GET /v1/me`
+El registro es el propio OTP: la API hace upsert por teléfono. `is_new` indica si recién se creó.
+
 ## 2026-09-30: La API conecta a Postgres por TCP con password
 PHP-FPM no puede usar el socket Unix (`/run/postgresql`) porque SELinux, en modo Enforcing, devuelve "Permission denied". Por TCP en `127.0.0.1` sí se puede, pero exige password. El password del rol `marco` va solo en `~/hobbystore/<env>/config.local.php` (chmod 600) y nunca en git.
 Los scripts (`migrate`, `backup`) corren por SSH como `marco` y sí usan el socket.
