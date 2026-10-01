@@ -9,13 +9,12 @@
 - **Pendiente para cerrar la Fase 0** (lo hace el usuario, porque está bloqueado por permisos para Claude):
   1. `git push origin main develop --tags`
   2. Activar la protección de `main` en GitHub.
-  3. Comprobar que `gyros.public` sigue igual a la línea base (40 relaciones, md5 `f7d79010eb52b85479557369fb4b622b`).
 - **Siguiente paso:** Fase 1 (login + esqueleto de la app) en `feature/f1-login-shell`, después de aprobar las dependencias Flutter.
 
 ## Estado por fase
 | Fase | Estado | Notas |
 |---|---|---|
-| 0 Fundaciones | 🔄 | v0.0.1 en staging y prod; falta el push y la verificación de `public` |
+| 0 Fundaciones | 🔄 | v0.0.1 en staging y prod, `public` verificado; falta el push |
 | 1 Login + esqueleto app | ⏳ | |
 | 2 Catálogo + Home | ⏳ | |
 | 3 Favoritos + Carrito | ⏳ | |
@@ -53,7 +52,7 @@
 - [x] `app_root.php` no es accesible por HTTP (403)
 - [x] staging: `/hobbystore/api-staging/v1/health` → `db: ok`, `schema: hobbystore_staging`
 - [x] prod: `/hobbystore/api/v1/health` → `db: ok`, `schema: hobbystore`
-- [ ] Las tablas de `public` en gyros no cambian (conteo antes y después)
+- [x] Las tablas de `public` en gyros no cambiaron (40 relaciones, md5 `f7d79010…` antes y después del deploy)
 
 ## Bloqueos / preguntas abiertas
 - Aprobar las dependencias Flutter para Fase 1 y siguientes: `provider`, `url_launcher`, `image_picker`, `cached_network_image`.
