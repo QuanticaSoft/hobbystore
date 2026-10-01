@@ -3,6 +3,10 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y [SemVer](https://semver.org/lang/es/).
 
 ## [Unreleased]
+
+## [0.1.0] - 2026-09-30
+Fase 1: login y esqueleto de la app.
+
 ### Added
 - App: login OTP (`otp_auth`) → shell con 5 tabs (Inicio, Categorías, Favoritos, Carrito, Perfil).
 - App: perfil editable (nombre y ciudad), aviso para completar el perfil y cierre de sesión.
@@ -11,6 +15,7 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y 
 
 ### Changed
 - App: ids `com.quanticasoft.hobbystore`, nombre "Hobby Store", iOS mínimo 15.0.
+- Flutter 3.47.5 (corrige el build para simulador iOS con Xcode 27).
 
 ## [0.0.1] - 2026-09-30
 Fase 0: fundaciones.
