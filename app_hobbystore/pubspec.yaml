@@ -9,6 +9,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  http: ^1.6.0
+  otp_auth:
+    path: ../packages/otp_auth
+  provider: ^6.1.5+1
 
 dev_dependencies:
   flutter_test:

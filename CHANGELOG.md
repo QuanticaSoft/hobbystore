@@ -3,6 +3,14 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y [SemVer](https://semver.org/lang/es/).
 
 ## [Unreleased]
+### Added
+- App: login OTP (`otp_auth`) → shell con 5 tabs (Inicio, Categorías, Favoritos, Carrito, Perfil).
+- App: perfil editable (nombre y ciudad), aviso para completar el perfil y cierre de sesión.
+- App: `AppConfig` por entorno (`--dart-define=ENV=dev|staging|prod`) y `ApiClient` con `X-Session-Token`.
+- API: `GET /v1/me` y `PATCH /v1/me`, con validación de sesión contra el OTP y caché en `auth_cache`.
+
+### Changed
+- App: ids `com.quanticasoft.hobbystore`, nombre "Hobby Store", iOS mínimo 15.0.
 
 ## [0.0.1] - 2026-09-30
 Fase 0: fundaciones.

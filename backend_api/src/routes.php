@@ -26,3 +26,13 @@ $router->get('/v1/health', static function () use ($config): never {
 $router->get('/v1/config', static function () use ($config): never {
     Response::json(['min_app_version' => $config['min_app_version']]);
 });
+
+$router->get('/v1/me', static function () use ($config): never {
+    $pdo = Db::connect($config['db']);
+    MeController::show($pdo, Auth::requirePhone($pdo, $config));
+});
+
+$router->patch('/v1/me', static function () use ($config): never {
+    $pdo = Db::connect($config['db']);
+    MeController::update($pdo, Auth::requirePhone($pdo, $config));
+});
