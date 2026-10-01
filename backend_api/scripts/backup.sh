@@ -9,5 +9,5 @@ SCHEMA="$(schema_for_env "$ENV")"
 
 mkdir -p "$REPO_ROOT/backups"
 out="$REPO_ROOT/backups/${SCHEMA}-$(date +%Y%m%d-%H%M%S).dump"
-ssh -o BatchMode=yes "$REMOTE_HOST" pg_dump -d "$REMOTE_DB" -n "$SCHEMA" -Fc > "$out"
+remote pg_dump -d "$REMOTE_DB" -n "$SCHEMA" -Fc > "$out"
 echo "Backup: $out"

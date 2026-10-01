@@ -16,20 +16,20 @@ APP_DIR="/home/marco/hobbystore/$ENV"
 require_git_ref_for_env "$ENV"
 confirm_prod "$ENV"
 
-ssh -o BatchMode=yes "$REMOTE_HOST" "test -f $APP_DIR/config.local.php" || {
+remote "test -f $APP_DIR/config.local.php" || {
   echo "Falta $APP_DIR/config.local.php en flamenco (ver config.local.php.example)." >&2; exit 1;
 }
 
-ssh -o BatchMode=yes "$REMOTE_HOST" "mkdir -p $WEB_DIR"
+remote "mkdir -p $WEB_DIR"
 
-rsync -az --delete \
+rsync -az --delete -e "ssh ${SSH_OPTS[*]}" \
   --exclude config.local.php --exclude public/ --exclude scripts/ --exclude sql/ \
   "$BACKEND_DIR/" "$REMOTE_HOST:$APP_DIR/"
 
-rsync -az --delete --exclude app_root.php \
+rsync -az --delete -e "ssh ${SSH_OPTS[*]}" --exclude app_root.php \
   "$BACKEND_DIR/public/" "$REMOTE_HOST:$WEB_DIR/"
 
-ssh -o BatchMode=yes "$REMOTE_HOST" \
+remote \
   "printf '%s\n' '<?php' \"return '$APP_DIR';\" > $WEB_DIR/app_root.php"
 
 echo "Desplegado $ENV → https://www.quanticasoft.com/hobbystore/$(basename "$WEB_DIR")/v1/health"
