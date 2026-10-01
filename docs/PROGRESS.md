@@ -1,20 +1,20 @@
 # Hobby Store: Progreso
 
-Última actualización: 2026-09-30 · Fase actual: **0: Fundaciones**
+Última actualización: 2026-09-30 · Fase actual: **1: Login + esqueleto app** (por iniciar)
 
 ## Dónde quedamos
-- **Release `v0.0.1` en prod** (2026-09-30):
-  - `https://www.quanticasoft.com/hobbystore/api/v1/health` → `db: ok`, schema `hobbystore`.
-  - Staging también OK (`hobbystore_staging`).
-- **Pendiente para cerrar la Fase 0** (lo hace el usuario, porque está bloqueado por permisos para Claude):
-  1. `git push origin main develop --tags`
-  2. Activar la protección de `main` en GitHub.
-- **Siguiente paso:** Fase 1 (login + esqueleto de la app) en `feature/f1-login-shell`, después de aprobar las dependencias Flutter.
+- **Fase 0 cerrada** (2026-09-30):
+  - `v0.0.1` en staging y prod.
+  - `gyros.public` verificado sin cambios.
+  - GitHub tiene `main` (`addfc05`), `develop` y el tag `v0.0.1`.
+  - `.claude/settings.json` permite a Claude Code hacer `git push` en este repo.
+- **Siguiente paso:** Fase 1 en `feature/f1-login-shell`, cuando se aprueben las dependencias Flutter.
+- **Pendiente manual:** activar la protección de `main` en GitHub (Settings → Branches).
 
 ## Estado por fase
 | Fase | Estado | Notas |
 |---|---|---|
-| 0 Fundaciones | 🔄 | v0.0.1 en staging y prod, `public` verificado; falta el push |
+| 0 Fundaciones | ✅ | v0.0.1 en staging y prod, `public` verificado, repo en GitHub |
 | 1 Login + esqueleto app | ⏳ | |
 | 2 Catálogo + Home | ⏳ | |
 | 3 Favoritos + Carrito | ⏳ | |
@@ -34,7 +34,7 @@
 - `scripts/deploy.sh` y `scripts/backup.sh` con validación de rama, tag y entorno
 
 ### 🔄 En proceso
-- GitHub: push, rama `develop` y protección de `main`
+- (nada)
 
 ### ⏳ Pendiente
 - **Fase 1:**
