@@ -3,26 +3,19 @@
 Última actualización: 2026-09-30 · Fase actual: **0: Fundaciones**
 
 ## Dónde quedamos
-- **Completado:**
-  - El repo se reestructuró como monorepo.
-  - Docs, `otp_auth` copiado, entorno dev en Docker y API mínima (`/v1/health`, `/v1/config`) probada en local.
-  - Scripts `migrate`, `deploy` y `backup` listos.
-- **En flamenco:**
-  - Línea base de `gyros.public`: 40 relaciones.
-  - Creados `~/hobbystore/{staging,prod}/config.local.php`.
-  - Schema `hobbystore_staging` migrado (001).
-  - API desplegada en `/hobbystore/api-staging`: `/v1/health` responde `db: ok` por TCP con password.
-  - Los `config.local.php` de staging y prod ya tienen el DSN TCP y el password.
-- **Siguiente paso:**
-  1. Hacer el release `v0.0.1` y aplicar `migrate.sh prod` + `deploy.sh prod`.
-  2. Verificar que `public` no cambió.
-  3. Hacer push a GitHub.
-  4. Cerrar la Fase 0.
+- **Release `v0.0.1` en prod** (2026-09-30):
+  - `https://www.quanticasoft.com/hobbystore/api/v1/health` → `db: ok`, schema `hobbystore`.
+  - Staging también OK (`hobbystore_staging`).
+- **Pendiente para cerrar la Fase 0** (lo hace el usuario, porque está bloqueado por permisos para Claude):
+  1. `git push origin main develop --tags`
+  2. Activar la protección de `main` en GitHub.
+  3. Comprobar que `gyros.public` sigue igual a la línea base (40 relaciones, md5 `f7d79010eb52b85479557369fb4b622b`).
+- **Siguiente paso:** Fase 1 (login + esqueleto de la app) en `feature/f1-login-shell`, después de aprobar las dependencias Flutter.
 
 ## Estado por fase
 | Fase | Estado | Notas |
 |---|---|---|
-| 0 Fundaciones | 🔄 | Staging OK; falta prod, el push y la verificación de `public` |
+| 0 Fundaciones | 🔄 | v0.0.1 en staging y prod; falta el push y la verificación de `public` |
 | 1 Login + esqueleto app | ⏳ | |
 | 2 Catálogo + Home | ⏳ | |
 | 3 Favoritos + Carrito | ⏳ | |
@@ -42,7 +35,6 @@
 - `scripts/deploy.sh` y `scripts/backup.sh` con validación de rama, tag y entorno
 
 ### 🔄 En proceso
-- Fase 0 en flamenco: schemas `hobbystore` / `hobbystore_staging`, deploy y health check
 - GitHub: push, rama `develop` y protección de `main`
 
 ### ⏳ Pendiente
@@ -60,7 +52,7 @@
 - [x] `migrate.sh dev` es idempotente (la segunda corrida aplica 0)
 - [x] `app_root.php` no es accesible por HTTP (403)
 - [x] staging: `/hobbystore/api-staging/v1/health` → `db: ok`, `schema: hobbystore_staging`
-- [ ] prod: `/hobbystore/api/v1/health` → `schema: hobbystore`
+- [x] prod: `/hobbystore/api/v1/health` → `db: ok`, `schema: hobbystore`
 - [ ] Las tablas de `public` en gyros no cambian (conteo antes y después)
 
 ## Bloqueos / preguntas abiertas
