@@ -1,20 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:otp_auth/otp_auth.dart';
+
+import 'app.dart';
+import 'core/api/api_client.dart';
+import 'core/config/app_config.dart';
 
 void main() {
-  runApp(const MainApp());
-}
+  final sessionStore = SecureSessionStore();
+  final OtpService otpService = AppConfig.useMockOtp
+      ? MockOtpService()
+      : HttpOtpService(baseUrl: AppConfig.otpBaseUrl);
 
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Text('Hello World!'),
-        ),
+  runApp(
+    HobbyStoreApp(
+      otpService: otpService,
+      sessionStore: sessionStore,
+      apiClientBuilder: (phone) => ApiClient(
+        baseUrl: AppConfig.apiBaseUrl,
+        sessionStore: sessionStore,
+        devPhone: AppConfig.useMockOtp ? phone : null,
       ),
-    );
-  }
+    ),
+  );
 }
