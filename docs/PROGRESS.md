@@ -1,28 +1,20 @@
 # Hobby Store: Progreso
 
-Última actualización: 2026-09-30 · Fase actual: **0: Fundaciones**
+Última actualización: 2026-09-30 · Fase actual: **1: Login + esqueleto app** (por iniciar)
 
 ## Dónde quedamos
-- **Completado:**
-  - El repo se reestructuró como monorepo.
-  - Docs, `otp_auth` copiado, entorno dev en Docker y API mínima (`/v1/health`, `/v1/config`) probada en local.
-  - Scripts `migrate`, `deploy` y `backup` listos.
-- **En flamenco:**
-  - Línea base de `gyros.public`: 40 relaciones.
-  - Creados `~/hobbystore/{staging,prod}/config.local.php`.
-  - Schema `hobbystore_staging` migrado (001).
-  - API desplegada en `/hobbystore/api-staging`: `/v1/health` responde `db: ok` por TCP con password.
-  - Los `config.local.php` de staging y prod ya tienen el DSN TCP y el password.
-- **Siguiente paso:**
-  1. Hacer el release `v0.0.1` y aplicar `migrate.sh prod` + `deploy.sh prod`.
-  2. Verificar que `public` no cambió.
-  3. Hacer push a GitHub.
-  4. Cerrar la Fase 0.
+- **Fase 0 cerrada** (2026-09-30):
+  - `v0.0.1` en staging y prod.
+  - `gyros.public` verificado sin cambios.
+  - GitHub tiene `main` (`addfc05`), `develop` y el tag `v0.0.1`.
+  - `.claude/settings.json` permite a Claude Code hacer `git push` en este repo.
+- **Siguiente paso:** Fase 1 en `feature/f1-login-shell`, cuando se aprueben las dependencias Flutter.
+- **Pendiente manual:** activar la protección de `main` en GitHub (Settings → Branches).
 
 ## Estado por fase
 | Fase | Estado | Notas |
 |---|---|---|
-| 0 Fundaciones | 🔄 | Staging OK; falta prod, el push y la verificación de `public` |
+| 0 Fundaciones | ✅ | v0.0.1 en staging y prod, `public` verificado, repo en GitHub |
 | 1 Login + esqueleto app | ⏳ | |
 | 2 Catálogo + Home | ⏳ | |
 | 3 Favoritos + Carrito | ⏳ | |
@@ -42,8 +34,7 @@
 - `scripts/deploy.sh` y `scripts/backup.sh` con validación de rama, tag y entorno
 
 ### 🔄 En proceso
-- Fase 0 en flamenco: schemas `hobbystore` / `hobbystore_staging`, deploy y health check
-- GitHub: push, rama `develop` y protección de `main`
+- (nada)
 
 ### ⏳ Pendiente
 - **Fase 1:**
@@ -60,8 +51,8 @@
 - [x] `migrate.sh dev` es idempotente (la segunda corrida aplica 0)
 - [x] `app_root.php` no es accesible por HTTP (403)
 - [x] staging: `/hobbystore/api-staging/v1/health` → `db: ok`, `schema: hobbystore_staging`
-- [ ] prod: `/hobbystore/api/v1/health` → `schema: hobbystore`
-- [ ] Las tablas de `public` en gyros no cambian (conteo antes y después)
+- [x] prod: `/hobbystore/api/v1/health` → `db: ok`, `schema: hobbystore`
+- [x] Las tablas de `public` en gyros no cambiaron (40 relaciones, md5 `f7d79010…` antes y después del deploy)
 
 ## Bloqueos / preguntas abiertas
 - Aprobar las dependencias Flutter para Fase 1 y siguientes: `provider`, `url_launcher`, `image_picker`, `cached_network_image`.
