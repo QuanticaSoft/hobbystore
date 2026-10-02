@@ -82,3 +82,12 @@ $router->put('/v1/cart/{id}', $withUser(static fn(PDO $pdo, int $userId, string 
 
 $router->delete('/v1/cart/{id}', $withUser(static fn(PDO $pdo, int $userId, string $id) =>
     CartController::remove($pdo, $config, $userId, $id)));
+
+$router->post('/v1/orders', $withUser(static fn(PDO $pdo, int $userId) =>
+    OrdersController::create($pdo, $config, $userId)));
+
+$router->get('/v1/orders', $withUser(static fn(PDO $pdo, int $userId) =>
+    OrdersController::index($pdo, $userId)));
+
+$router->patch('/v1/orders/{id}', $withUser(static fn(PDO $pdo, int $userId, string $id) =>
+    OrdersController::updateStatus($pdo, $userId, $id)));

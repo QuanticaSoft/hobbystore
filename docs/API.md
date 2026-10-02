@@ -25,6 +25,9 @@
 | GET | `/v1/cart` | sí | `{cart}` (ver abajo) |
 | PUT | `/v1/cart/{id}` | sí | Body `{qty}` (1 a 99): fija la cantidad → `{cart}` · 400 si la cantidad es inválida o el producto es propio · 409 si supera el stock · 404 si no está visible |
 | DELETE | `/v1/cart/{id}` | sí | Quita la línea → `{cart}` |
+| POST | `/v1/orders` | sí | Body `{group_key, note?}` (`group_key` sale de `cart.groups[].key`; nota de hasta 300 caracteres) → 201 `{order, whatsapp_url}`. Crea el pedido con fotos de título y precio y quita esas líneas del carrito · 400 si el comprador no tiene nombre · 404 si el grupo ya no está en el carrito · 409 si se supera el stock |
+| GET | `/v1/orders?role=buyer\|seller` | sí | `{orders: [order]}`: mis compras o pedidos recibidos, del más reciente al más antiguo |
+| PATCH | `/v1/orders/{id}` | sí | Body `{status}` → `{order}` · 409 si la transición no está permitida para el rol · 404 si el usuario no participa en el pedido |
 
 **Formas comunes**
 - `product` (resumen): `{id, title, price_bob, condition: new|used, city, thumb_url, seller_name, store_slug}`
@@ -35,3 +38,8 @@
   - Un grupo por vendedor (tienda o particular): cada uno será un pedido por WhatsApp.
   - Los montos se suman en centavos.
   - Los productos que dejaron de estar visibles no aparecen ni suman.
+- `cart.groups[].key`: `store:<slug>` o `user:<id>`. Identifica al vendedor al crear el pedido.
+- `order`: `{id, status, role: buyer|seller, total_bob, note, created_at (ISO 8601), counterpart: {name, city}, is_store, items: [{product_id, title, price_bob, qty}], allowed_statuses, whatsapp_url}`.
+  - `allowed_statuses`: los estados a los que **este** usuario puede llevar el pedido. Vendedor: pending → contacted / confirmed / cancelled; contacted → confirmed / cancelled; confirmed → completed / cancelled. Comprador: solo cancelar mientras el pedido está en pending o contacted.
+  - `whatsapp_url`: enlace `wa.me` hacia la contraparte. Al crear el pedido trae el mensaje completo (productos, total y nota); en los listados, un saludo con el número de pedido.
+- Número de WhatsApp del vendedor: el `whatsapp_phone` de la tienda o, si es particular, su celular verificado por OTP.

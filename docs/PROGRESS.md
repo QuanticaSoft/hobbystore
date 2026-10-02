@@ -1,14 +1,13 @@
 # Hobby Store: Progreso
 
-Última actualización: 2026-10-02 · Fase actual: **4: Pedido → WhatsApp** (por iniciar)
+Última actualización: 2026-10-02 · Fase actual: **4: Pedido → WhatsApp** (en revisión)
 
 ## Dónde quedamos
 - **Fase 3 cerrada: release `v0.3.0`** (2026-10-02).
   - Probada por el usuario en su teléfono con `ENV=staging`: favoritos, carrito por vendedor, stock, contador.
   - La sesión, los favoritos y el carrito persisten al cerrar y reabrir la app, sin pedir código.
-- **Siguiente paso:** Fase 4 (pedido → WhatsApp) en `feature/f4-pedidos-whatsapp`.
-  - Requiere aprobar `url_launcher`.
-  - Las tiendas ya tienen `whatsapp_phone`. Para los particulares falta definir el número: ¿el mismo teléfono verificado por OTP?
+- **Fase 4 programada y probada en local** (rama `feature/f4-pedidos-whatsapp`, PR hacia `develop`).
+  - Después del merge: `migrate.sh staging` (004) → `deploy.sh staging` → el usuario prueba en el teléfono → release `v0.4.0`.
 
 ## Estado por fase
 | Fase | Estado | Notas |
@@ -17,7 +16,7 @@
 | 1 Login + esqueleto app | ✅ | v0.1.0: login OTP, shell con 5 tabs, perfil; probado en iPhone |
 | 2 Catálogo + Home | ✅ | v0.2.0: Home, categorías, búsqueda, detalle y tienda; demo en staging |
 | 3 Favoritos + Carrito | ✅ | v0.3.0: ♥ + tab Favoritos, carrito por vendedor con + / −, contador |
-| 4 Pedido → WhatsApp | ⏳ | |
+| 4 Pedido → WhatsApp | 🔄 | PR en revisión; falta staging, la prueba en el dispositivo y el release v0.4.0 |
 | 5 Vender (particulares) | ⏳ | |
 | 6 Tiendas + Admin | ⏳ | |
 | 7 Publicación en tiendas | ⏳ | |
@@ -44,13 +43,23 @@
 - `scripts/deploy.sh` y `scripts/backup.sh` con validación de rama, tag y entorno
 
 ### 🔄 En proceso
-- (nada)
+- **Fase 4** (`feature/f4-pedidos-whatsapp`):
+  - Migración 004. API: crear pedido desde un grupo del carrito (con fotos de título y precio, mensaje de WhatsApp armado en el servidor), listar como comprador o vendedor, y cambiar el estado con transiciones por rol.
+  - App: hoja "Pedido a X" (nota opcional) → abre WhatsApp. Perfil › "Mis compras" / "Pedidos recibidos" con WhatsApp a la contraparte y botones de estado.
+  - Particulares: WhatsApp a su celular verificado.
 
 ### ⏳ Pendiente
 - Fases 2 a 7: detalle de cada fase en `docs/PLAN.md`.
 
 ### 🧊 Postergado (post-MVP)
 - Pago QR o pasarela, reseñas y rating, push notifications, chat interno, búsqueda full-text, versión web, envíos con tarifa.
+
+## Checklist Fase 4
+- [x] `flutter analyze` sin issues · `flutter test` 32/32 (pedido → WhatsApp, sin nombre, WhatsApp que no abre, cancelación del comprador, confirmación del vendedor)
+- [x] API dev: mensaje con productos, total y nota; el carrito se vacía de ese grupo; vendedor y particular (celular verificado); transiciones válidas e inválidas (409); otro usuario (404); rol inválido (400)
+- [x] Builds: simulador iOS ✅ · APK debug ✅
+- [ ] staging: migración 004 + deploy
+- [ ] Dispositivo: pedir a una tienda y a un particular, que WhatsApp abra con el mensaje, Mis compras y Pedidos recibidos
 
 ## Checklist Fase 3 (cerrada)
 - [x] `flutter analyze` sin issues · `flutter test` 27/27 (incluye backend falso con estado para favoritos y carrito)
@@ -85,7 +94,7 @@
 
 ## Bloqueos / preguntas abiertas
 - Emulador Android + API dev: usar `--dart-define=API_BASE_URL=http://10.0.2.2:8080/v1`.
-- Dependencias Flutter: `provider` ✅, `cached_network_image` ✅. Pendientes: `url_launcher` (Fase 4) e `image_picker` (Fase 5).
+- Dependencias Flutter: `provider` ✅, `cached_network_image` ✅, `url_launcher` ✅. Pendiente: `image_picker` (Fase 5).
 - Cuentas Google Play Console y Apple Developer (necesarias para la Fase 7; conviene tramitarlas antes).
 - Número demo para los revisores de Apple y Google: requiere un cambio en el gateway OTP de celulares-platform.
 

@@ -7,6 +7,7 @@ import '../../core/widgets/coming_soon.dart';
 import '../../core/widgets/error_retry.dart';
 import '../../core/widgets/network_picture.dart';
 import '../catalog/product_detail_screen.dart';
+import '../orders/place_order_sheet.dart';
 import 'cart_models.dart';
 import 'cart_store.dart';
 
@@ -105,13 +106,12 @@ class _GroupCard extends StatelessWidget {
                 ],
               ),
             ),
-            // El pedido por WhatsApp llega en la Fase 4.
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
               child: FilledButton.icon(
-                onPressed: null,
+                onPressed: () => showPlaceOrderSheet(context, group),
                 icon: const Icon(Icons.chat_outlined),
-                label: Text('Pedir a ${seller.name} (muy pronto)'),
+                label: Text('Pedir a ${seller.name}'),
               ),
             ),
           ],
