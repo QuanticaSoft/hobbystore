@@ -1,15 +1,13 @@
 # Hobby Store: Progreso
 
-Última actualización: 2026-10-02 · Fase actual: **4: Pedido → WhatsApp** (en staging, falta probar en dispositivo)
+Última actualización: 2026-10-02 · Fase actual: **5: Vender (particulares)** (por iniciar)
 
 ## Dónde quedamos
-- **Fase 3 cerrada: release `v0.3.0`** (2026-10-02).
-  - Probada por el usuario en su teléfono con `ENV=staging`: favoritos, carrito por vendedor, stock, contador.
-  - La sesión, los favoritos y el carrito persisten al cerrar y reabrir la app, sin pedir código.
-- **Fase 4 en staging** (PR #9 con merge): migración 004, API 0.4.0. Pedidos protegidos (401 sin sesión y con token inválido).
-  - Siguiente: el usuario prueba en el teléfono con `ENV=staging` → release `v0.4.0`.
-  - En la demo, los WhatsApp son ficticios (`+591600000XX`), **salvo Garage RC en staging**: apunta a un número real de prueba del usuario. El cambio se hizo solo en la BD, no en `demo.sql`, porque el repo es público. Un `seed.sh staging` lo revierte: avisar antes de correrlo.
-  - **Lado del vendedor** ("Pedidos recibidos"): su prueba en el dispositivo se pospone a la Fase 6, cuando haya tiendas con dueños reales (decisión del usuario). Mientras tanto lo cubren los tests y la API probada con curl.
+- **Fase 4 cerrada: release `v0.4.0`** (2026-10-02).
+  - El usuario la probó en su teléfono con `ENV=staging`: pedido a Garage RC → WhatsApp real con el mensaje, Mis compras, escribir al vendedor y cancelar.
+  - **Pendiente para la Fase 6:** probar "Pedidos recibidos" en el dispositivo, con una tienda de dueño real.
+  - Staging: el WhatsApp de Garage RC apunta a un número real de prueba (solo en la BD). Un `seed.sh staging` lo revierte: avisar antes.
+- **Siguiente paso:** Fase 5 (vender: publicar productos de particulares) en `feature/f5-vender`. Requiere aprobar `image_picker`.
 
 ## Estado por fase
 | Fase | Estado | Notas |
@@ -18,7 +16,7 @@
 | 1 Login + esqueleto app | ✅ | v0.1.0: login OTP, shell con 5 tabs, perfil; probado en iPhone |
 | 2 Catálogo + Home | ✅ | v0.2.0: Home, categorías, búsqueda, detalle y tienda; demo en staging |
 | 3 Favoritos + Carrito | ✅ | v0.3.0: ♥ + tab Favoritos, carrito por vendedor con + / −, contador |
-| 4 Pedido → WhatsApp | 🔄 | En staging; falta la prueba en el dispositivo y el release v0.4.0 |
+| 4 Pedido → WhatsApp | ✅ | v0.4.0: pedido por vendedor → WhatsApp, Mis compras / Pedidos recibidos |
 | 5 Vender (particulares) | ⏳ | |
 | 6 Tiendas + Admin | ⏳ | |
 | 7 Publicación en tiendas | ⏳ | |
@@ -26,6 +24,9 @@
 ## Features
 
 ### ✅ Hecho
+- **Fase 4 (v0.4.0):**
+  - Migración 004. `POST /v1/orders` (mensaje `wa.me` armado en el servidor; particulares a su celular verificado), listado por rol y cambio de estado con transiciones.
+  - App: "Pedir a <vendedor>" con nota → WhatsApp; Perfil › Mis compras / Pedidos recibidos.
 - **Fase 3 (v0.3.0):**
   - Migración 003. API con sesión: `/v1/favorites` y `/v1/cart`, agrupado por vendedor, con validación de stock y de producto propio.
   - App: ♥ (tarjeta y detalle) + tab Favoritos; "Añadir al carrito" + tab Carrito (+ / −, subtotales) + contador. `AppProviders` compartido con los tests.
@@ -45,10 +46,7 @@
 - `scripts/deploy.sh` y `scripts/backup.sh` con validación de rama, tag y entorno
 
 ### 🔄 En proceso
-- **Fase 4** (PR #9 con merge, en staging):
-  - Migración 004. API: crear pedido desde un grupo del carrito (con fotos de título y precio, mensaje de WhatsApp armado en el servidor), listar como comprador o vendedor, y cambiar el estado con transiciones por rol.
-  - App: hoja "Pedido a X" (nota opcional) → abre WhatsApp. Perfil › "Mis compras" / "Pedidos recibidos" con WhatsApp a la contraparte y botones de estado.
-  - Particulares: WhatsApp a su celular verificado.
+- (nada)
 
 ### ⏳ Pendiente
 - Fases 2 a 7: detalle de cada fase en `docs/PLAN.md`.
@@ -56,12 +54,12 @@
 ### 🧊 Postergado (post-MVP)
 - Pago QR o pasarela, reseñas y rating, push notifications, chat interno, búsqueda full-text, versión web, envíos con tarifa.
 
-## Checklist Fase 4
+## Checklist Fase 4 (cerrada)
 - [x] `flutter analyze` sin issues · `flutter test` 32/32 (pedido → WhatsApp, sin nombre, WhatsApp que no abre, cancelación del comprador, confirmación del vendedor)
 - [x] API dev: mensaje con productos, total y nota; el carrito se vacía de ese grupo; vendedor y particular (celular verificado); transiciones válidas e inválidas (409); otro usuario (404); rol inválido (400)
 - [x] Builds: simulador iOS ✅ · APK debug ✅
 - [x] staging: migración 004 + deploy (API 0.4.0)
-- [ ] Dispositivo (comprador): pedir a Garage RC → WhatsApp real con el mensaje; Mis compras, escribir al vendedor y cancelar
+- [x] Dispositivo (comprador): pedir a Garage RC → WhatsApp real con el mensaje; Mis compras, escribir al vendedor y cancelar
 - [ ] Dispositivo (vendedor): Pedidos recibidos → se pospone a la Fase 6
 
 ## Checklist Fase 3 (cerrada)
@@ -113,3 +111,4 @@
 | v0.1.0 | 2026-09-30 | staging + prod | Fase 1: login OTP, shell con 5 tabs, perfil, `/v1/me` |
 | v0.2.0 | 2026-10-01 | staging + prod | Fase 2: catálogo y Home (prod sin datos hasta la Fase 6) |
 | v0.3.0 | 2026-10-02 | staging + prod | Fase 3: favoritos y carrito por vendedor |
+| v0.4.0 | 2026-10-02 | staging + prod | Fase 4: pedidos por WhatsApp |

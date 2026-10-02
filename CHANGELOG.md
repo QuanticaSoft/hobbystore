@@ -3,6 +3,10 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y [SemVer](https://semver.org/lang/es/).
 
 ## [Unreleased]
+
+## [0.4.0] - 2026-10-02
+Fase 4: pedidos por WhatsApp.
+
 ### Added
 - BD: migración `004_orders` (`orders` + `order_items`, con fotos de título y precio).
 - API: `POST /v1/orders` (desde un grupo del carrito, con nota opcional, devuelve el enlace de WhatsApp), `GET /v1/orders?role=buyer|seller` y `PATCH /v1/orders/{id}` con transiciones validadas por rol.
