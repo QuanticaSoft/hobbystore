@@ -36,3 +36,23 @@ $router->patch('/v1/me', static function () use ($config): never {
     $pdo = Db::connect($config['db']);
     MeController::update($pdo, Auth::requirePhone($pdo, $config));
 });
+
+$router->get('/v1/home', static function () use ($config): never {
+    CatalogController::home(Db::connect($config['db']), $config);
+});
+
+$router->get('/v1/categories', static function () use ($config): never {
+    CatalogController::categories(Db::connect($config['db']));
+});
+
+$router->get('/v1/products', static function () use ($config): never {
+    CatalogController::products(Db::connect($config['db']), $config);
+});
+
+$router->get('/v1/products/{id}', static function (string $id) use ($config): never {
+    CatalogController::product(Db::connect($config['db']), $config, $id);
+});
+
+$router->get('/v1/stores/{slug}', static function (string $slug) use ($config): never {
+    CatalogController::store(Db::connect($config['db']), $config, $slug);
+});

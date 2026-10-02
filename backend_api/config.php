@@ -14,6 +14,8 @@ $defaults = [
         'schema' => 'hobbystore',
     ],
     'otp_session_url' => 'mock',
+    // null = se deriva del request (dev). En flamenco: URL del directorio de media del entorno.
+    'media_base_url' => null,
     'auth_cache_seconds' => 600,
     'min_app_version' => '0.0.0',
 ];
