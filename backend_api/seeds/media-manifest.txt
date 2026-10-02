@@ -1,0 +1,38 @@
+# Imágenes de la demo: <tipo>|<destino sin extensión>|<origen relativo a pictures/>
+# Las fotos son de terceros y NO van al repo (es público): seed.sh las toma
+# de pictures/ en la máquina del desarrollador y las redimensiona.
+# Tipos: product (1200px + thumb 400px), banner (1600px), store (logo 256px, desde seeds/media/stores).
+
+banner|banners/diecast-convencion|hobby/events/event10.jpg
+banner|banners/ferrari-75|hobby/events/event11.jpg
+banner|banners/arrma-fireteam|hobby/todos/326547713_5976170795782512_4927265543080049402_n.jpg
+banner|banners/drone-racing|hobby/todos/drone-racing_pilot.jpg
+
+store|stores/aeromodel-lapaz|aeromodel-lapaz.png
+store|stores/garage-rc-scz|garage-rc-scz.png
+store|stores/escala-135-cbba|escala-135-cbba.png
+
+product|products/eflite-p51|EFL089500_A7_WZ63XST2.jpg
+product|products/spitfire-pnp|PMMA1821E_A0_VHAIOU9Z.jpg
+product|products/dubro-kwikstart-usb|DUB337_A0_OJJU50EP.jpg
+product|products/dubro-glo-ignitor|DUB841_A0_EU0QGLRH.jpg
+product|products/dubro-bidon|DUB907_A0_1N309YPZ.jpg
+product|products/dji-avata|hobby/landing/avata.png
+product|products/arrma-vorteks|ARA4305V3_A00_MGHQVCYP.jpg
+product|products/tamiya-novafox|hobby/landing/novafox.jpg
+product|products/proboat-remolcador|PRB08036_A05_TCFVJ5SB.jpg
+product|products/proboat-recoil|PRB08053T1_A4_2CWTF5TH.jpg
+product|products/tamiya-m16|TAM35081_A0_S6BIQ7QE.jpg
+product|products/tamiya-m3-stuart|TAM35360_A0_10EG6JKY.jpg
+product|products/revell-fokker|RMX741169096_A0_TMU0SLV3.jpg
+product|products/revell-sskl|RMX777379096_A0_P0X5V32N.jpg
+product|products/revell-spitfire|hobby/estaticos/revell-supermarine-spitfire-mkvb-63897-packct.jpg
+product|products/fokker-armado-1|hobby/todos/fokker1.jpg
+product|products/fokker-armado-2|hobby/todos/fokker2.jpg
+product|products/bf109-armado|hobby/todos/messerschmitt_bf_109.jpg
+product|products/jeep-armado|hobby/todos/jeep1.jpg
+product|products/camel-madera-1|hobby/todos/camel2.jpg
+product|products/camel-madera-2|hobby/todos/camel3.jpg
+product|products/diligencia-1|hobby/todos/diligencia1.jpg
+product|products/diligencia-2|hobby/todos/diligencia2.jpg
+product|products/diligencia-3|hobby/todos/diligencia3.jpg

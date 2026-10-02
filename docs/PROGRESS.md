@@ -1,20 +1,22 @@
 # Hobby Store: Progreso
 
-Última actualización: 2026-09-30 · Fase actual: **2: Catálogo + Home** (por iniciar)
+Última actualización: 2026-10-01 · Fase actual: **2: Catálogo + Home** (en revisión)
 
 ## Dónde quedamos
-- **Fase 1 cerrada: release `v0.1.0`** (2026-09-30).
-  - Probada por el usuario en iPhone con `ENV=staging` y SMS real: login, perfil, cerrar sesión y volver a entrar.
-- **Siguiente paso:** Fase 2 (catálogo + Home) en `feature/f2-catalogo-home`.
-  - Hay que aprobar `cached_network_image`.
-  - Hacen falta imágenes semilla: logos de tiendas, banners de eventos y fotos de productos.
+- **Fase 2 programada y probada en local** (rama `feature/f2-catalogo-home`, PR hacia `develop`).
+- **Después del merge:**
+  1. En flamenco: agregar `media_base_url` a los `config.local.php` y crear `media-staging/` y `media/`.
+  2. `migrate.sh staging` (002) → `seed.sh staging` → `deploy.sh staging`.
+  3. El usuario prueba en el iPhone con `ENV=staging`.
+  4. Release `v0.2.0`: en prod solo la migración y el deploy, **sin demo**.
+- **Pendiente de decidir:** qué mostrar en prod mientras no haya tiendas reales (¿cargar las primeras tiendas reales antes del release?).
 
 ## Estado por fase
 | Fase | Estado | Notas |
 |---|---|---|
 | 0 Fundaciones | ✅ | v0.0.1 en staging y prod, `public` verificado, repo en GitHub |
 | 1 Login + esqueleto app | ✅ | v0.1.0: login OTP, shell con 5 tabs, perfil; probado en iPhone |
-| 2 Catálogo + Home | ⏳ | |
+| 2 Catálogo + Home | 🔄 | PR en revisión; falta staging, la prueba en el dispositivo y el release v0.2.0 |
 | 3 Favoritos + Carrito | ⏳ | |
 | 4 Pedido → WhatsApp | ⏳ | |
 | 5 Vender (particulares) | ⏳ | |
@@ -36,13 +38,24 @@
 - `scripts/deploy.sh` y `scripts/backup.sh` con validación de rama, tag y entorno
 
 ### 🔄 En proceso
-- (nada)
+- **Fase 2** (`feature/f2-catalogo-home`):
+  - API pública: `/v1/home`, `/v1/categories`, `/v1/products` (category, store, q, page), `/v1/products/{id}`, `/v1/stores/{slug}`.
+  - Migración `002_catalog` (12 categorías reales). Demo con `seed.sh dev|staging`.
+  - App: Home (buscador, carrusel `CarouselView`, tiendas, novedades), Categorías, listado con scroll infinito, búsqueda, detalle (galería, vendedor, entrega) y tienda.
+  - "Añadir al carrito" visible pero inactivo (llega en la Fase 3). Sin botón de WhatsApp (Fase 4, falta aprobar `url_launcher`).
 
 ### ⏳ Pendiente
 - Fases 2 a 7: detalle de cada fase en `docs/PLAN.md`.
 
 ### 🧊 Postergado (post-MVP)
 - Pago QR o pasarela, reseñas y rating, push notifications, chat interno, búsqueda full-text, versión web, envíos con tarifa.
+
+## Checklist Fase 2
+- [x] `flutter analyze` sin issues · `flutter test` 20/20
+- [x] API dev: home, categorías con conteo, filtros, búsqueda (con escape de `%`, `_` y `!`, sin distinguir mayúsculas), paginación, 404, detalle de tienda y de particular
+- [x] `seed.sh dev` es idempotente (dos corridas → 3 tiendas, 20 productos, 24 imágenes, 4 banners)
+- [ ] staging: migración 002 + demo + deploy
+- [ ] Dispositivo: Home → banner/tienda → producto → galería; Categorías → listado; búsqueda; scroll infinito
 
 ## Checklist Fase 1 (cerrada)
 - [x] `flutter analyze` sin issues · `flutter test` 10/10
@@ -63,12 +76,12 @@
 
 ## Bloqueos / preguntas abiertas
 - Emulador Android + API dev: usar `--dart-define=API_BASE_URL=http://10.0.2.2:8080/v1`.
-- Dependencias Flutter: `provider` ✅ aprobado. Pendientes de aprobación para las fases 2 a 5: `url_launcher`, `image_picker`, `cached_network_image`.
+- Dependencias Flutter: `provider` ✅, `cached_network_image` ✅. Pendientes: `url_launcher` (Fase 4) e `image_picker` (Fase 5).
 - Cuentas Google Play Console y Apple Developer (necesarias para la Fase 7; conviene tramitarlas antes).
 - Número demo para los revisores de Apple y Google: requiere un cambio en el gateway OTP de celulares-platform.
 
 ## Entornos
-- **Dev:** API `http://localhost:8080/v1` · PG Docker `:5433` (hobby/hobby, BD `hobbystore_dev`) · OTP `mock` (código 123456)
+- **Dev:** API `http://localhost:8080/v1` · demo: `backend_api/scripts/seed.sh dev` · PG Docker `:5433` (hobby/hobby, BD `hobbystore_dev`) · OTP `mock` (código 123456)
 - **Staging:** `https://www.quanticasoft.com/hobbystore/api-staging/v1` · `gyros.hobbystore_staging` · rama `develop`
 - **Prod:** `https://www.quanticasoft.com/hobbystore/api/v1` · `gyros.hobbystore` · tag en `main`
 

@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import 'core/api/api_client.dart';
 import 'core/theme/app_theme.dart';
+import 'features/catalog/catalog_repository.dart';
 import 'features/session/user_session.dart';
 import 'features/shell/home_shell.dart';
 
@@ -35,11 +36,16 @@ class HobbyStoreApp extends StatelessWidget {
           sessionStore: sessionStore,
           // La sesión vive debajo de la ruta de inicio: al cerrar sesión,
           // otp_auth reemplaza la ruta y el provider se descarta con ella.
-          homeBuilder: (context, auth, phone, isNewUser) =>
-              ChangeNotifierProvider(
-                create: (_) => UserSession(apiClientBuilder(phone))..load(),
-                child: HomeShell(auth: auth),
-              ),
+          homeBuilder: (context, auth, phone, isNewUser) {
+            final api = apiClientBuilder(phone);
+            return MultiProvider(
+              providers: [
+                ChangeNotifierProvider(create: (_) => UserSession(api)..load()),
+                Provider(create: (_) => CatalogRepository(api)),
+              ],
+              child: HomeShell(auth: auth),
+            );
+          },
         ),
       ),
     );

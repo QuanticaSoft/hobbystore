@@ -3,6 +3,7 @@ import 'package:otp_auth/otp_auth.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/widgets/coming_soon.dart';
+import '../catalog/categories_tab.dart';
 import '../home/home_tab.dart';
 import '../profile/profile_tab.dart';
 import '../session/user_session.dart';
@@ -33,11 +34,7 @@ class _HomeShellState extends State<HomeShell> {
         index: _selectedIndex,
         children: [
           HomeTab(onCompleteProfile: () => _selectTab(profileTabIndex)),
-          const _PlaceholderTab(
-            title: 'Categorías',
-            icon: Icons.category_outlined,
-            message: 'Aquí verás aviones, autos, barcos, drones, maquetas y más.',
-          ),
+          const CategoriesTab(),
           const _PlaceholderTab(
             title: 'Favoritos',
             icon: Icons.favorite_outline,
@@ -46,7 +43,8 @@ class _HomeShellState extends State<HomeShell> {
           const _PlaceholderTab(
             title: 'Carrito',
             icon: Icons.shopping_cart_outlined,
-            message: 'Tu carrito, agrupado por vendedor, para pedir por WhatsApp.',
+            message:
+                'Tu carrito, agrupado por vendedor, para pedir por WhatsApp.',
           ),
           ProfileTab(auth: widget.auth),
         ],
