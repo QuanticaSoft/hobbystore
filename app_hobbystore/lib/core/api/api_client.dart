@@ -27,30 +27,38 @@ class ApiClient {
   final SessionStore sessionStore;
 
   /// Solo con el OTP mock: el servidor dev no puede validar tokens del mock y
-  /// confía en este teléfono (header `X-Dev-Phone`).
-  final String? devPhone;
+  /// confía en el teléfono del usuario que entró (header `X-Dev-Phone`).
+  final bool sendDevPhone;
+
+  /// Teléfono del usuario con sesión; la app lo fija al entrar.
+  String? currentPhone;
 
   final http.Client _client;
 
   ApiClient({
     required this.baseUrl,
     required this.sessionStore,
-    this.devPhone,
+    this.sendDevPhone = false,
     http.Client? client,
   }) : _client = client ?? http.Client();
 
-  Future<Map<String, dynamic>> get(String path) => _send('GET', path);
+  Future<Map<String, dynamic>> get(String path, {Map<String, String>? query}) =>
+      _send('GET', path, query: query);
 
   Future<Map<String, dynamic>> patch(String path, Map<String, dynamic> body) =>
-      _send('PATCH', path, body);
+      _send('PATCH', path, body: body);
 
   Future<Map<String, dynamic>> _send(
     String method,
-    String path, [
+    String path, {
     Map<String, dynamic>? body,
-  ]) async {
-    final request = http.Request(method, Uri.parse('$baseUrl$path'))
-      ..headers.addAll(await _headers());
+    Map<String, String>? query,
+  }) async {
+    var uri = Uri.parse('$baseUrl$path');
+    if (query != null && query.isNotEmpty) {
+      uri = uri.replace(queryParameters: query);
+    }
+    final request = http.Request(method, uri)..headers.addAll(await _headers());
     if (body != null) request.body = jsonEncode(body);
 
     final http.Response response;
@@ -70,16 +78,23 @@ class ApiClient {
     try {
       data = jsonDecode(utf8.decode(response.bodyBytes));
     } on FormatException {
-      throw ApiException(response.statusCode, 'Respuesta inválida del servidor.');
+      throw ApiException(
+        response.statusCode,
+        'Respuesta inválida del servidor.',
+      );
     }
     if (data is! Map<String, dynamic>) {
-      throw ApiException(response.statusCode, 'Respuesta inválida del servidor.');
+      throw ApiException(
+        response.statusCode,
+        'Respuesta inválida del servidor.',
+      );
     }
 
     if (response.statusCode >= 400) {
       throw ApiException(
         response.statusCode,
-        data['message'] as String? ?? 'Error del servidor (${response.statusCode}).',
+        data['message'] as String? ??
+            'Error del servidor (${response.statusCode}).',
       );
     }
     return data;
@@ -91,7 +106,7 @@ class ApiClient {
       'Accept': 'application/json',
       'Content-Type': 'application/json',
       'X-Session-Token': ?token,
-      'X-Dev-Phone': ?devPhone,
+      if (sendDevPhone) 'X-Dev-Phone': ?currentPhone,
     };
   }
 }

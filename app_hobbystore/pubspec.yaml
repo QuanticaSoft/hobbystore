@@ -1,12 +1,13 @@
 name: app_hobbystore
 description: "A new Flutter project."
 publish_to: 'none'
-version: 0.1.0+2
+version: 0.2.0+3
 
 environment:
   sdk: ^3.12.1
 
 dependencies:
+  cached_network_image: ^4.0.4
   flutter:
     sdk: flutter
   http: ^1.6.0

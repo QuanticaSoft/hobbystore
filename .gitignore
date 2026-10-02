@@ -10,3 +10,7 @@ pictures/
 backend_api/config.local.php
 backend_api/public/app_root.php
 backups/
+
+# Media generada localmente (semillas y subidas en dev)
+backend_api/public/media/
+backend_api/seeds/.build/

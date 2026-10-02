@@ -3,8 +3,10 @@ import 'package:otp_auth/otp_auth.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/widgets/coming_soon.dart';
+import '../catalog/categories_tab.dart';
 import '../home/home_tab.dart';
 import '../profile/profile_tab.dart';
+import '../session/log_out.dart';
 import '../session/user_session.dart';
 
 class HomeShell extends StatefulWidget {
@@ -21,6 +23,16 @@ class _HomeShellState extends State<HomeShell> {
 
   int _selectedIndex = 0;
 
+  // La sesión vive a nivel de app; cada vez que alguien entra se carga su
+  // perfil. Tras el primer frame: load() notifica de inmediato y no se puede
+  // notificar a otros widgets mientras este se está construyendo.
+  @override
+  void initState() {
+    super.initState();
+    final session = context.read<UserSession>();
+    WidgetsBinding.instance.addPostFrameCallback((_) => session.load());
+  }
+
   void _selectTab(int index) => setState(() => _selectedIndex = index);
 
   @override
@@ -33,11 +45,7 @@ class _HomeShellState extends State<HomeShell> {
         index: _selectedIndex,
         children: [
           HomeTab(onCompleteProfile: () => _selectTab(profileTabIndex)),
-          const _PlaceholderTab(
-            title: 'Categorías',
-            icon: Icons.category_outlined,
-            message: 'Aquí verás aviones, autos, barcos, drones, maquetas y más.',
-          ),
+          const CategoriesTab(),
           const _PlaceholderTab(
             title: 'Favoritos',
             icon: Icons.favorite_outline,
@@ -46,7 +54,8 @@ class _HomeShellState extends State<HomeShell> {
           const _PlaceholderTab(
             title: 'Carrito',
             icon: Icons.shopping_cart_outlined,
-            message: 'Tu carrito, agrupado por vendedor, para pedir por WhatsApp.',
+            message:
+                'Tu carrito, agrupado por vendedor, para pedir por WhatsApp.',
           ),
           ProfileTab(auth: widget.auth),
         ],
@@ -126,7 +135,7 @@ class _ExpiredSession extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               FilledButton(
-                onPressed: () => auth.logout(context),
+                onPressed: () => logOut(context, auth),
                 child: const Text('Ingresar'),
               ),
             ],

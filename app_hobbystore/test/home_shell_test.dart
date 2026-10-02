@@ -1,3 +1,4 @@
+import 'package:app_hobbystore/features/catalog/catalog_repository.dart';
 import 'package:app_hobbystore/features/session/user_session.dart';
 import 'package:app_hobbystore/features/shell/home_shell.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +13,9 @@ Future<UserSession> pumpShell(
   WidgetTester tester,
   Future<http.Response> Function(http.Request request) handler,
 ) async {
-  final session = UserSession(fakeApi(handler));
+  usePhoneScreen(tester);
+  final api = fakeApi(handler);
+  final session = UserSession(api);
   final auth = OtpAuth(
     otpService: MockOtpService(),
     sessionStore: InMemorySessionStore(testToken),
@@ -20,37 +23,51 @@ Future<UserSession> pumpShell(
   );
 
   await tester.pumpWidget(
-    MaterialApp(
-      home: ChangeNotifierProvider.value(
-        value: session,
-        child: HomeShell(auth: auth),
-      ),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(value: session),
+        Provider(create: (_) => CatalogRepository(api)),
+      ],
+      child: MaterialApp(home: HomeShell(auth: auth)),
     ),
   );
   await session.load();
-  await tester.pump();
+  await settle(tester);
   return session;
 }
 
-void main() {
-  testWidgets('muestra las 5 tabs y pide completar el perfil', (tester) async {
-    await pumpShell(
-      tester,
-      (_) async => jsonResponse({'user': userJson(), 'is_new': true}),
-    );
+Map<String, Map<String, dynamic>> baseRoutes({Map<String, dynamic>? user}) => {
+  '/me': {'user': user ?? userJson(), 'is_new': true},
+  '/home': homeJson(),
+  '/categories': {'categories': []},
+};
 
-    for (final label in ['Inicio', 'Categorías', 'Favoritos', 'Carrito', 'Perfil']) {
+void main() {
+  testWidgets('muestra las 5 tabs y el Home con banners, tiendas y novedades', (
+    tester,
+  ) async {
+    await pumpShell(tester, routes(baseRoutes()));
+
+    for (final label in [
+      'Inicio',
+      'Categorías',
+      'Favoritos',
+      'Carrito',
+      'Perfil',
+    ]) {
       expect(find.widgetWithText(NavigationDestination, label), findsOneWidget);
     }
-    expect(find.text('Hola, hobbista'), findsOneWidget);
     expect(find.text('Completa tu perfil'), findsOneWidget);
+    expect(find.text('Convención Diecast'), findsOneWidget);
+    expect(find.text('Tiendas'), findsOneWidget);
+    expect(find.text('Novedades'), findsOneWidget);
+    // La grilla queda bajo el borde de la pantalla: se construye pero no se ve.
+    expect(find.text('Bs 3.150', skipOffstage: false), findsOneWidget);
+    expect(find.text('Usado', skipOffstage: false), findsOneWidget);
   });
 
   testWidgets('"Completa tu perfil" lleva a la tab Perfil', (tester) async {
-    await pumpShell(
-      tester,
-      (_) async => jsonResponse({'user': userJson(), 'is_new': true}),
-    );
+    await pumpShell(tester, routes(baseRoutes()));
 
     await tester.tap(find.text('Completa tu perfil'));
     await tester.pump();
@@ -59,37 +76,43 @@ void main() {
     expect(find.widgetWithText(TextFormField, 'Nombre'), findsOneWidget);
   });
 
-  testWidgets('guardar el perfil actualiza el saludo', (tester) async {
-    await pumpShell(tester, (request) async {
-      if (request.method == 'PATCH') {
-        return jsonResponse({
+  testWidgets('guardar el perfil quita el aviso del Home', (tester) async {
+    await pumpShell(
+      tester,
+      routes(
+        baseRoutes(),
+        onPatch: (_) => {
           'user': userJson(displayName: 'Marco', city: 'La Paz'),
-        });
-      }
-      return jsonResponse({'user': userJson(), 'is_new': true});
-    });
+        },
+      ),
+    );
 
     await tester.tap(find.widgetWithText(NavigationDestination, 'Perfil'));
     await tester.pump();
-    await tester.enterText(find.widgetWithText(TextFormField, 'Nombre'), 'Marco');
-    await tester.enterText(find.widgetWithText(TextFormField, 'Ciudad'), 'La Paz');
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Nombre'),
+      'Marco',
+    );
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Ciudad'),
+      'La Paz',
+    );
     await tester.tap(find.widgetWithText(FilledButton, 'Guardar'));
-    await tester.pump();
-    await tester.pump();
+    await settle(tester);
 
     expect(find.text('Perfil guardado.'), findsOneWidget);
 
     await tester.tap(find.widgetWithText(NavigationDestination, 'Inicio'));
     await tester.pump();
-    expect(find.text('Hola, Marco'), findsOneWidget);
     expect(find.text('Completa tu perfil'), findsNothing);
   });
 
   testWidgets('el formulario exige nombre y ciudad', (tester) async {
-    final requests = <String>[];
-    await pumpShell(tester, (request) async {
-      requests.add(request.method);
-      return jsonResponse({'user': userJson(), 'is_new': true});
+    final methods = <String>[];
+    final handler = routes(baseRoutes());
+    await pumpShell(tester, (request) {
+      methods.add(request.method);
+      return handler(request);
     });
 
     await tester.tap(find.widgetWithText(NavigationDestination, 'Perfil'));
@@ -98,7 +121,7 @@ void main() {
     await tester.pump();
 
     expect(find.text('Campo requerido'), findsNWidgets(2));
-    expect(requests, isNot(contains('PATCH')));
+    expect(methods, isNot(contains('PATCH')));
   });
 
   testWidgets('una sesión expirada pide volver a ingresar', (tester) async {
@@ -115,5 +138,29 @@ void main() {
       findsOneWidget,
     );
     expect(find.byType(NavigationBar), findsNothing);
+  });
+
+  testWidgets('si el Home falla se puede reintentar', (tester) async {
+    var homeCalls = 0;
+    await pumpShell(tester, (request) async {
+      if (request.url.path.endsWith('/home')) {
+        homeCalls++;
+        if (homeCalls == 1) {
+          return jsonResponse({
+            'status': 'error',
+            'message': 'Servidor caído.',
+          }, 500);
+        }
+        return jsonResponse(homeJson());
+      }
+      return routes(baseRoutes())(request);
+    });
+
+    expect(find.text('Servidor caído.'), findsOneWidget);
+
+    await tester.tap(find.widgetWithText(FilledButton, 'Reintentar'));
+    await settle(tester);
+
+    expect(find.text('Novedades'), findsOneWidget);
   });
 }

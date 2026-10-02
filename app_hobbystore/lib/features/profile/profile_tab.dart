@@ -3,6 +3,8 @@ import 'package:otp_auth/otp_auth.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/api/api_client.dart';
+import '../../core/widgets/error_retry.dart';
+import '../session/log_out.dart';
 import '../session/user.dart';
 import '../session/user_session.dart';
 
@@ -22,7 +24,7 @@ class ProfileTab extends StatelessWidget {
     } else if (session.isLoading) {
       body = const Center(child: CircularProgressIndicator());
     } else {
-      body = _LoadError(
+      body = ErrorRetry(
         message: session.errorMessage ?? 'No se pudo cargar tu perfil.',
         onRetry: session.load,
       );
@@ -125,35 +127,11 @@ class _ProfileFormState extends State<_ProfileForm> {
           ),
           const SizedBox(height: 32),
           OutlinedButton.icon(
-            onPressed: () => widget.auth.logout(context),
+            onPressed: () => confirmLogOut(context, widget.auth),
             icon: const Icon(Icons.logout),
             label: const Text('Cerrar sesión'),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _LoadError extends StatelessWidget {
-  final String message;
-  final VoidCallback onRetry;
-
-  const _LoadError({required this.message, required this.onRetry});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(message, textAlign: TextAlign.center),
-            const SizedBox(height: 16),
-            FilledButton(onPressed: onRetry, child: const Text('Reintentar')),
-          ],
-        ),
       ),
     );
   }

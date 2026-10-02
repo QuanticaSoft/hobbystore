@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:app_hobbystore/core/api/api_client.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:otp_auth/otp_auth.dart';
@@ -36,3 +38,84 @@ http.Response jsonResponse(Map<String, dynamic> body, [int status = 200]) =>
       status,
       headers: {'content-type': 'application/json; charset=utf-8'},
     );
+
+/// Respuestas falsas por ruta (sin `/v1`); [requests] guarda lo que se pidió.
+Future<http.Response> Function(http.Request) routes(
+  Map<String, Map<String, dynamic>> responses, {
+  Map<String, dynamic> Function(http.Request request)? onPatch,
+}) {
+  return (request) async {
+    if (request.method == 'PATCH' && onPatch != null) {
+      return jsonResponse(onPatch(request));
+    }
+    final path = request.url.path.replaceFirst('/v1', '');
+    final body = responses[path];
+    return body == null
+        ? jsonResponse({'status': 'error', 'message': 'No encontrado.'}, 404)
+        : jsonResponse(body);
+  };
+}
+
+Map<String, dynamic> productJson(
+  int id, {
+  String title = 'Producto',
+  double price = 100,
+  String condition = 'new',
+  String sellerName = 'Garage RC',
+  String? storeSlug = 'garage-rc-scz',
+}) => {
+  'id': id,
+  'title': title,
+  'price_bob': price,
+  'condition': condition,
+  'city': 'Santa Cruz',
+  'thumb_url': null,
+  'seller_name': sellerName,
+  'store_slug': storeSlug,
+};
+
+Map<String, dynamic> homeJson() => {
+  'banners': [
+    {
+      'id': 1,
+      'title': 'Convención Diecast',
+      'image_url': null,
+      'link_url': null,
+    },
+  ],
+  'featured_stores': [
+    {
+      'slug': 'garage-rc-scz',
+      'name': 'Garage RC',
+      'city': 'Santa Cruz',
+      'logo_url': null,
+    },
+  ],
+  'latest_products': [
+    productJson(1, title: 'Arrma Vorteks', price: 3150),
+    productJson(
+      2,
+      title: 'Jeep armado',
+      price: 300,
+      condition: 'used',
+      sellerName: 'Ana Rojas',
+      storeSlug: null,
+    ),
+  ],
+};
+
+/// Deja avanzar las cargas asíncronas (cliente HTTP falso + FutureBuilder).
+/// No usa pumpAndSettle porque los spinners animan sin fin mientras cargan.
+Future<void> settle(WidgetTester tester) async {
+  for (var i = 0; i < 10; i++) {
+    await tester.pump(const Duration(milliseconds: 50));
+  }
+}
+
+/// Pantalla de teléfono (360×800 lógicos). La de test por defecto (800×600)
+/// es apaisada: la galería cuadrada deja fuera de vista el resto del detalle.
+void usePhoneScreen(WidgetTester tester) {
+  tester.view.physicalSize = const Size(1080, 2400);
+  tester.view.devicePixelRatio = 3;
+  addTearDown(tester.view.reset);
+}

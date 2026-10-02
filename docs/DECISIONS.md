@@ -2,6 +2,40 @@
 
 Formato: fecha, decisión y por qué. Las decisiones nuevas van arriba.
 
+## 2026-10-01: Estado de sesión por encima de MaterialApp
+`ApiClient`, `UserSession` y `CatalogRepository` se proveen por encima de `MaterialApp`, con un solo `ApiClient` para toda la app. Al entrar, `homeBuilder` fija `api.currentPhone`; al cerrar sesión se limpia todo **después** de navegar al login.
+**Por qué:** las pantallas que se abren con `Navigator.push` son rutas hermanas del Home, no hijas. Con los providers dentro del Home no los encontraban (pantalla roja en el iPhone).
+
+## 2026-10-01: Sin botón "Salir de la app"
+No se agrega. En iOS cerrar la app desde código va contra las guías de Apple y puede causar el rechazo en la revisión; en Android tampoco es la norma. La sesión se guarda en el llavero (Keychain/Keystore): al reabrir la app se entra directo, sin código. "Cerrar sesión" sirve para cambiar de cuenta, pide confirmación y avisa que hará falta un código SMS nuevo.
+
+## 2026-10-01: Prod se publica sin catálogo
+La `v0.2.0` sale a prod con el Home vacío: sin tiendas, productos ni banners. Las primeras tiendas reales entran con la Fase 6 (alta y aprobación de tiendas).
+**Por qué:** decisión del usuario. Prod nunca lleva datos de demo, y cargar tiendas reales a mano antes de tener el flujo de alta sería trabajo descartable.
+
+## 2026-10-01: Catálogo público, sin sesión
+`/v1/home`, `/v1/categories`, `/v1/products` y `/v1/stores` no piden token.
+**Por qué:** es información pública de vitrina. Así se podrá usar desde una web o un enlace compartido sin rehacer la API. Lo que es del usuario (favoritos, carrito, pedidos) sí pedirá sesión.
+
+## 2026-10-01: Media fuera del directorio de la API
+La BD guarda rutas relativas (`seed/products/x.jpg`) y la API arma la URL con `media_base_url`.
+- En flamenco, la media vive en `/webs/quanticasoft/hobbystore/media` (prod) y `/media-staging`.
+- En dev, la URL se deriva del request (sirve igual para localhost y para 10.0.2.2 del emulador) y los archivos están en `backend_api/public/media/`, fuera de git.
+
+**Por qué:** `deploy.sh` hace `rsync --delete` de `public/`; si la media estuviera adentro, se borraría en cada deploy.
+
+## 2026-10-01: Datos de demostración separados de las migraciones
+`seeds/demo.sql` + `seeds/media-manifest.txt`, cargados con `scripts/seed.sh dev|staging`. El script se niega a correr en prod.
+- Las fotos de productos son de terceros y el repo es público: no se versionan. El script las toma de `pictures/` (local) y las redimensiona con `sips`.
+- Los logos de las tiendas de demo son propios (generados) y sí se versionan.
+- Las categorías no son demo: viven en la migración `002_catalog.sql`.
+- La demo es idempotente: se identifica por los teléfonos `+591600000XX` y las rutas `seed/`.
+
+**Por qué:** prod debe arrancar sin tiendas falsas, y staging necesita datos realistas para probar.
+
+## 2026-10-01: Búsqueda con ILIKE
+Para el MVP alcanza con `ILIKE` sobre título y descripción, escapando `%`, `_` y `!` (con `!` como carácter de escape). Si el catálogo crece, se pasa a full-text de Postgres (`tsvector` + índice GIN).
+
 ## 2026-09-30: Ids de la app y versión mínima de iOS
 - Android `applicationId` e iOS bundle id: `com.quanticasoft.hobbystore`. Nombre visible: "Hobby Store".
 - iOS mínimo 15.0, porque Xcode 27 no acepta un deployment target menor.
