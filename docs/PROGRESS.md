@@ -8,7 +8,8 @@
   - La sesión, los favoritos y el carrito persisten al cerrar y reabrir la app, sin pedir código.
 - **Fase 4 en staging** (PR #9 con merge): migración 004, API 0.4.0. Pedidos protegidos (401 sin sesión y con token inválido).
   - Siguiente: el usuario prueba en el teléfono con `ENV=staging` → release `v0.4.0`.
-  - En la demo, los WhatsApp de tiendas y particulares son números ficticios (`+591600000XX`).
+  - En la demo, los WhatsApp son ficticios (`+591600000XX`), **salvo Garage RC en staging**: apunta a un número real de prueba del usuario. El cambio se hizo solo en la BD, no en `demo.sql`, porque el repo es público. Un `seed.sh staging` lo revierte: avisar antes de correrlo.
+  - **Lado del vendedor** ("Pedidos recibidos"): su prueba en el dispositivo se pospone a la Fase 6, cuando haya tiendas con dueños reales (decisión del usuario). Mientras tanto lo cubren los tests y la API probada con curl.
 
 ## Estado por fase
 | Fase | Estado | Notas |
@@ -60,7 +61,8 @@
 - [x] API dev: mensaje con productos, total y nota; el carrito se vacía de ese grupo; vendedor y particular (celular verificado); transiciones válidas e inválidas (409); otro usuario (404); rol inválido (400)
 - [x] Builds: simulador iOS ✅ · APK debug ✅
 - [x] staging: migración 004 + deploy (API 0.4.0)
-- [ ] Dispositivo: pedir a una tienda y a un particular, que WhatsApp abra con el mensaje, Mis compras y Pedidos recibidos
+- [ ] Dispositivo (comprador): pedir a Garage RC → WhatsApp real con el mensaje; Mis compras, escribir al vendedor y cancelar
+- [ ] Dispositivo (vendedor): Pedidos recibidos → se pospone a la Fase 6
 
 ## Checklist Fase 3 (cerrada)
 - [x] `flutter analyze` sin issues · `flutter test` 27/27 (incluye backend falso con estado para favoritos y carrito)
