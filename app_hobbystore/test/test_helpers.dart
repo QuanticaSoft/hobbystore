@@ -127,3 +127,16 @@ void usePhoneScreen(WidgetTester tester) {
   tester.view.devicePixelRatio = 3;
   addTearDown(tester.view.reset);
 }
+
+/// Desplaza el scroll dentro de [screen] hasta que [target] se vea. Con las
+/// tabs en IndexedStack hay varios Scrollable montados: se usa el de [screen].
+Future<void> scrollTo(WidgetTester tester, Finder target, Type screen) async {
+  await tester.scrollUntilVisible(
+    target,
+    200,
+    scrollable: find
+        .descendant(of: find.byType(screen), matching: find.byType(Scrollable))
+        .first,
+  );
+  await tester.pumpAndSettle();
+}

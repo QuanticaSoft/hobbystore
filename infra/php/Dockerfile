@@ -6,6 +6,8 @@ RUN apt-get update \
     && docker-php-ext-install pdo_pgsql gd exif \
     && rm -rf /var/lib/apt/lists/*
 
+COPY uploads.ini /usr/local/etc/php/conf.d/uploads.ini
+
 # Mismo comportamiento que flamenco: .htaccess activo y docroot = public/
 ENV APACHE_DOCUMENT_ROOT=/var/www/app/public
 RUN a2enmod rewrite \

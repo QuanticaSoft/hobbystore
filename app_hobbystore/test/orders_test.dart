@@ -1,4 +1,5 @@
 import 'package:app_hobbystore/core/format/price.dart';
+import 'package:app_hobbystore/features/profile/profile_tab.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -17,7 +18,7 @@ Future<void> openOrderSheet(WidgetTester tester, String sellerName) async {
 
 Future<void> openProfileEntry(WidgetTester tester, String title) async {
   await goToTab(tester, 'Perfil');
-  await tester.ensureVisible(find.text(title));
+  await scrollTo(tester, find.text(title), ProfileTab);
   await tester.tap(find.text(title));
   await settle(tester);
   await tester.pumpAndSettle();

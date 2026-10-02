@@ -21,7 +21,7 @@ class NetworkPicture extends StatelessWidget {
       ),
     );
     final imageUrl = url;
-    if (imageUrl == null) return placeholder;
+    if (imageUrl == null || imageUrl.isEmpty) return placeholder;
 
     return CachedNetworkImage(
       imageUrl: imageUrl,

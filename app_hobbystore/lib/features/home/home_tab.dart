@@ -9,6 +9,7 @@ import '../catalog/product_list_screen.dart';
 import '../catalog/search_screen.dart';
 import '../catalog/store_screen.dart';
 import '../catalog/widgets/product_card.dart';
+import '../sell/my_products_screen.dart';
 import '../session/user_session.dart';
 
 class HomeTab extends StatefulWidget {
@@ -48,7 +49,16 @@ class _HomeTabState extends State<HomeTab> {
     final user = context.watch<UserSession>().user;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Hobby Store')),
+      appBar: AppBar(
+        title: const Text('Hobby Store'),
+        actions: [
+          TextButton.icon(
+            onPressed: () => _push(const MyProductsScreen()),
+            icon: const Icon(Icons.sell_outlined),
+            label: const Text('Vender'),
+          ),
+        ],
+      ),
       body: RefreshIndicator(
         onRefresh: _refresh,
         child: FutureBuilder(

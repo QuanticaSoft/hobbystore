@@ -28,6 +28,12 @@
 | POST | `/v1/orders` | sí | Body `{group_key, note?}` (`group_key` sale de `cart.groups[].key`; nota de hasta 300 caracteres) → 201 `{order, whatsapp_url}`. Crea el pedido con fotos de título y precio y quita esas líneas del carrito · 400 si el comprador no tiene nombre · 404 si el grupo ya no está en el carrito · 409 si se supera el stock |
 | GET | `/v1/orders?role=buyer\|seller` | sí | `{orders: [order]}`: mis compras o pedidos recibidos, del más reciente al más antiguo |
 | PATCH | `/v1/orders/{id}` | sí | Body `{status}` → `{order}` · 409 si la transición no está permitida para el rol · 404 si el usuario no participa en el pedido |
+| GET | `/v1/my/products` | sí | `{products: [my_product], active_count, active_limit}`: publicaciones propias, salvo las eliminadas |
+| POST | `/v1/my/products` | sí | Body `{title, description, category (slug), price_bob, condition, stock}` → 201 `{product}`, creada **pausada** · 400 si falta nombre o ciudad en el perfil, o si un campo es inválido |
+| PATCH | `/v1/my/products/{id}` | sí | Cualquier campo del alta y/o `status: active\|paused\|sold` → `{product}` · activar exige ≥1 foto, stock ≥1 y menos de 5 activas para particulares (409) |
+| DELETE | `/v1/my/products/{id}` | sí | Baja lógica (`status = removed`) → `{product_id, status}` |
+| POST | `/v1/my/products/{id}/images` | sí | Multipart, campo `photo` (JPG, PNG o WEBP; hasta 8 MB) → 201 `{product}` · máximo 5 fotos (409) · 413 si es muy grande · 415 si no es imagen |
+| DELETE | `/v1/my/products/{id}/images/{imageId}` | sí | → `{product}` · 409 si es la única foto de una publicación activa |
 
 **Formas comunes**
 - `product` (resumen): `{id, title, price_bob, condition: new|used, city, thumb_url, seller_name, store_slug}`
@@ -43,3 +49,5 @@
   - `allowed_statuses`: los estados a los que **este** usuario puede llevar el pedido. Vendedor: pending → contacted / confirmed / cancelled; contacted → confirmed / cancelled; confirmed → completed / cancelled. Comprador: solo cancelar mientras el pedido está en pending o contacted.
   - `whatsapp_url`: enlace `wa.me` hacia la contraparte. Al crear el pedido trae el mensaje completo (productos, total y nota); en los listados, un saludo con el número de pedido.
 - Número de WhatsApp del vendedor: el `whatsapp_phone` de la tienda o, si es particular, su celular verificado por OTP.
+- `my_product`: `{id, title, description, price_bob, condition, stock, status, city, category: {slug, name}, images: [{id, url, thumb_url}]}`.
+- **Publicar** = `POST` (queda pausada) → `POST .../images` por cada foto → `PATCH {status: "active"}`.

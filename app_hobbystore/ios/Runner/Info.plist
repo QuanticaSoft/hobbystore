@@ -31,6 +31,10 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>Para tomar las fotos de los productos que publicas.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Para elegir las fotos de los productos que publicas.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
