@@ -1,14 +1,16 @@
 # Hobby Store: Progreso
 
-Última actualización: 2026-10-01 · Fase actual: **2: Catálogo + Home** (despliegue a staging)
+Última actualización: 2026-10-01 · Fase actual: **2: Catálogo + Home** (en staging, falta probar en dispositivo)
 
 ## Dónde quedamos
 - **Fase 2 con merge en `develop`** (PR #4).
-- **Después del merge:**
-  1. En flamenco: agregar `media_base_url` a los `config.local.php` y crear `media-staging/` y `media/`.
-  2. `migrate.sh staging` (002) → `seed.sh staging` → `deploy.sh staging`.
-  3. El usuario prueba en el iPhone con `ENV=staging`.
-  4. Release `v0.2.0`: en prod solo la migración y el deploy, **sin demo**.
+- **En staging:**
+  - Migración 002, demo cargada (4 banners, 3 tiendas, 20 productos), API 0.2.0.
+  - Media en `/hobbystore/media-staging`, protegida con `.htaccess` (sin listado, sin PHP).
+  - `media_base_url` configurada en los `config.local.php` de staging y prod.
+- **Siguiente paso:**
+  1. El usuario prueba en el iPhone con `ENV=staging`.
+  2. Release `v0.2.0`: prod solo con migración y deploy, sin demo.
 - **Decidido:** prod sale con el catálogo vacío; se llena con la Fase 6 (ver DECISIONS).
 
 ## Estado por fase
@@ -16,7 +18,7 @@
 |---|---|---|
 | 0 Fundaciones | ✅ | v0.0.1 en staging y prod, `public` verificado, repo en GitHub |
 | 1 Login + esqueleto app | ✅ | v0.1.0: login OTP, shell con 5 tabs, perfil; probado en iPhone |
-| 2 Catálogo + Home | 🔄 | En `develop`; falta staging, la prueba en el dispositivo y el release v0.2.0 |
+| 2 Catálogo + Home | 🔄 | En staging; falta la prueba en el dispositivo y el release v0.2.0 |
 | 3 Favoritos + Carrito | ⏳ | |
 | 4 Pedido → WhatsApp | ⏳ | |
 | 5 Vender (particulares) | ⏳ | |
@@ -54,7 +56,7 @@
 - [x] `flutter analyze` sin issues · `flutter test` 20/20
 - [x] API dev: home, categorías con conteo, filtros, búsqueda (con escape de `%`, `_` y `!`, sin distinguir mayúsculas), paginación, 404, detalle de tienda y de particular
 - [x] `seed.sh dev` es idempotente (dos corridas → 3 tiendas, 20 productos, 24 imágenes, 4 banners)
-- [ ] staging: migración 002 + demo + deploy
+- [x] staging: migración 002 + demo + deploy; imágenes por HTTPS ✅
 - [ ] Dispositivo: Home → banner/tienda → producto → galería; Categorías → listado; búsqueda; scroll infinito
 
 ## Checklist Fase 1 (cerrada)
