@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 
 import '../../core/api/api_client.dart';
 import '../../core/widgets/error_retry.dart';
+import '../orders/order_models.dart';
+import '../orders/orders_screen.dart';
 import '../session/log_out.dart';
 import '../session/user.dart';
 import '../session/user_session.dart';
@@ -65,6 +67,10 @@ class _ProfileFormState extends State<_ProfileForm> {
     super.dispose();
   }
 
+  void _openOrders(OrderRole role) => Navigator.of(
+    context,
+  ).push(MaterialPageRoute(builder: (_) => OrdersScreen(role: role)));
+
   String? _required(String? value) =>
       (value == null || value.trim().isEmpty) ? 'Campo requerido' : null;
 
@@ -124,6 +130,28 @@ class _ProfileFormState extends State<_ProfileForm> {
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
                 : const Text('Guardar'),
+          ),
+          const SizedBox(height: 24),
+          Card(
+            margin: EdgeInsets.zero,
+            child: Column(
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.shopping_bag_outlined),
+                  title: const Text('Mis compras'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => _openOrders(OrderRole.buyer),
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  leading: const Icon(Icons.inbox_outlined),
+                  title: const Text('Pedidos recibidos'),
+                  subtitle: const Text('Lo que te pidieron como vendedor'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => _openOrders(OrderRole.seller),
+                ),
+              ],
+            ),
           ),
           const SizedBox(height: 32),
           OutlinedButton.icon(

@@ -4,6 +4,16 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y 
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-10-02
+Fase 4: pedidos por WhatsApp.
+
+### Added
+- BD: migración `004_orders` (`orders` + `order_items`, con fotos de título y precio).
+- API: `POST /v1/orders` (desde un grupo del carrito, con nota opcional, devuelve el enlace de WhatsApp), `GET /v1/orders?role=buyer|seller` y `PATCH /v1/orders/{id}` con transiciones validadas por rol.
+- App: "Pedir a <vendedor>" en el carrito, con nota opcional, que abre WhatsApp con el pedido detallado.
+- App: Perfil › "Mis compras" y "Pedidos recibidos": estado, productos, total, "Escribir por WhatsApp" y cambio de estado.
+- Dependencia: `url_launcher`.
+
 ## [0.3.0] - 2026-10-02
 Fase 3: favoritos y carrito.
 

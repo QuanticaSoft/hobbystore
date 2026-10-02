@@ -2,6 +2,14 @@
 
 Formato: fecha, decisión y por qué. Las decisiones nuevas van arriba.
 
+## 2026-10-02: Pedidos por WhatsApp: el mensaje lo arma el servidor
+`POST /v1/orders` registra el pedido (con fotos de título y precio), quita el grupo del carrito y devuelve el enlace `wa.me` con el mensaje completo. La app solo abre ese enlace.
+**Por qué:** el número de pedido, el formato y el número del vendedor quedan en un solo lugar y son iguales en todas las versiones de la app.
+- **Particulares:** se usa su celular verificado por OTP (decisión del usuario): ya está comprobado que es suyo y no hay que pedir otro dato.
+- **Stock:** no se descuenta al crear el pedido. La venta se cierra por WhatsApp y el vendedor actualiza el stock (Fase 5). Sí se valida que la cantidad no supere el stock.
+- **Nombre del comprador:** es obligatorio para pedir, para que el vendedor sepa con quién habla.
+- Se abre con `launchUrl(..., externalApplication)` sin `canLaunchUrl`, así que no hace falta declarar esquemas en Android ni en iOS. Si no se abre, el pedido igual queda en "Mis compras".
+
 ## 2026-10-01: Estado de sesión por encima de MaterialApp
 `ApiClient`, `UserSession` y `CatalogRepository` se proveen por encima de `MaterialApp`, con un solo `ApiClient` para toda la app. Al entrar, `homeBuilder` fija `api.currentPhone`; al cerrar sesión se limpia todo **después** de navegar al login.
 **Por qué:** las pantallas que se abren con `Navigator.push` son rutas hermanas del Home, no hijas. Con los providers dentro del Home no los encontraban (pantalla roja en el iPhone).

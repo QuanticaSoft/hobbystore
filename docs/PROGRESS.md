@@ -1,14 +1,13 @@
 # Hobby Store: Progreso
 
-Última actualización: 2026-10-02 · Fase actual: **4: Pedido → WhatsApp** (por iniciar)
+Última actualización: 2026-10-02 · Fase actual: **5: Vender (particulares)** (por iniciar)
 
 ## Dónde quedamos
-- **Fase 3 cerrada: release `v0.3.0`** (2026-10-02).
-  - Probada por el usuario en su teléfono con `ENV=staging`: favoritos, carrito por vendedor, stock, contador.
-  - La sesión, los favoritos y el carrito persisten al cerrar y reabrir la app, sin pedir código.
-- **Siguiente paso:** Fase 4 (pedido → WhatsApp) en `feature/f4-pedidos-whatsapp`.
-  - Requiere aprobar `url_launcher`.
-  - Las tiendas ya tienen `whatsapp_phone`. Para los particulares falta definir el número: ¿el mismo teléfono verificado por OTP?
+- **Fase 4 cerrada: release `v0.4.0`** (2026-10-02).
+  - El usuario la probó en su teléfono con `ENV=staging`: pedido a Garage RC → WhatsApp real con el mensaje, Mis compras, escribir al vendedor y cancelar.
+  - **Pendiente para la Fase 6:** probar "Pedidos recibidos" en el dispositivo, con una tienda de dueño real.
+  - Staging: el WhatsApp de Garage RC apunta a un número real de prueba (solo en la BD). Un `seed.sh staging` lo revierte: avisar antes.
+- **Siguiente paso:** Fase 5 (vender: publicar productos de particulares) en `feature/f5-vender`. Requiere aprobar `image_picker`.
 
 ## Estado por fase
 | Fase | Estado | Notas |
@@ -17,7 +16,7 @@
 | 1 Login + esqueleto app | ✅ | v0.1.0: login OTP, shell con 5 tabs, perfil; probado en iPhone |
 | 2 Catálogo + Home | ✅ | v0.2.0: Home, categorías, búsqueda, detalle y tienda; demo en staging |
 | 3 Favoritos + Carrito | ✅ | v0.3.0: ♥ + tab Favoritos, carrito por vendedor con + / −, contador |
-| 4 Pedido → WhatsApp | ⏳ | |
+| 4 Pedido → WhatsApp | ✅ | v0.4.0: pedido por vendedor → WhatsApp, Mis compras / Pedidos recibidos |
 | 5 Vender (particulares) | ⏳ | |
 | 6 Tiendas + Admin | ⏳ | |
 | 7 Publicación en tiendas | ⏳ | |
@@ -25,6 +24,9 @@
 ## Features
 
 ### ✅ Hecho
+- **Fase 4 (v0.4.0):**
+  - Migración 004. `POST /v1/orders` (mensaje `wa.me` armado en el servidor; particulares a su celular verificado), listado por rol y cambio de estado con transiciones.
+  - App: "Pedir a <vendedor>" con nota → WhatsApp; Perfil › Mis compras / Pedidos recibidos.
 - **Fase 3 (v0.3.0):**
   - Migración 003. API con sesión: `/v1/favorites` y `/v1/cart`, agrupado por vendedor, con validación de stock y de producto propio.
   - App: ♥ (tarjeta y detalle) + tab Favoritos; "Añadir al carrito" + tab Carrito (+ / −, subtotales) + contador. `AppProviders` compartido con los tests.
@@ -51,6 +53,14 @@
 
 ### 🧊 Postergado (post-MVP)
 - Pago QR o pasarela, reseñas y rating, push notifications, chat interno, búsqueda full-text, versión web, envíos con tarifa.
+
+## Checklist Fase 4 (cerrada)
+- [x] `flutter analyze` sin issues · `flutter test` 32/32 (pedido → WhatsApp, sin nombre, WhatsApp que no abre, cancelación del comprador, confirmación del vendedor)
+- [x] API dev: mensaje con productos, total y nota; el carrito se vacía de ese grupo; vendedor y particular (celular verificado); transiciones válidas e inválidas (409); otro usuario (404); rol inválido (400)
+- [x] Builds: simulador iOS ✅ · APK debug ✅
+- [x] staging: migración 004 + deploy (API 0.4.0)
+- [x] Dispositivo (comprador): pedir a Garage RC → WhatsApp real con el mensaje; Mis compras, escribir al vendedor y cancelar
+- [ ] Dispositivo (vendedor): Pedidos recibidos → se pospone a la Fase 6
 
 ## Checklist Fase 3 (cerrada)
 - [x] `flutter analyze` sin issues · `flutter test` 27/27 (incluye backend falso con estado para favoritos y carrito)
@@ -85,7 +95,7 @@
 
 ## Bloqueos / preguntas abiertas
 - Emulador Android + API dev: usar `--dart-define=API_BASE_URL=http://10.0.2.2:8080/v1`.
-- Dependencias Flutter: `provider` ✅, `cached_network_image` ✅. Pendientes: `url_launcher` (Fase 4) e `image_picker` (Fase 5).
+- Dependencias Flutter: `provider` ✅, `cached_network_image` ✅, `url_launcher` ✅. Pendiente: `image_picker` (Fase 5).
 - Cuentas Google Play Console y Apple Developer (necesarias para la Fase 7; conviene tramitarlas antes).
 - Número demo para los revisores de Apple y Google: requiere un cambio en el gateway OTP de celulares-platform.
 
@@ -101,3 +111,4 @@
 | v0.1.0 | 2026-09-30 | staging + prod | Fase 1: login OTP, shell con 5 tabs, perfil, `/v1/me` |
 | v0.2.0 | 2026-10-01 | staging + prod | Fase 2: catálogo y Home (prod sin datos hasta la Fase 6) |
 | v0.3.0 | 2026-10-02 | staging + prod | Fase 3: favoritos y carrito por vendedor |
+| v0.4.0 | 2026-10-02 | staging + prod | Fase 4: pedidos por WhatsApp |

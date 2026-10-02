@@ -44,17 +44,21 @@ class CartSeller {
 
 /// Los productos de un mismo vendedor: será un pedido por WhatsApp (Fase 4).
 class CartGroup {
+  /// Identifica al vendedor al crear el pedido (`store:<slug>` o `user:<id>`).
+  final String key;
   final CartSeller seller;
   final List<CartItem> items;
   final double subtotalBob;
 
   const CartGroup({
+    required this.key,
     required this.seller,
     required this.items,
     required this.subtotalBob,
   });
 
   factory CartGroup.fromJson(Map<String, dynamic> json) => CartGroup(
+    key: json['key'] as String,
     seller: CartSeller.fromJson(json['seller'] as Map<String, dynamic>),
     items: (json['items'] as List)
         .map((item) => CartItem.fromJson(item as Map<String, dynamic>))

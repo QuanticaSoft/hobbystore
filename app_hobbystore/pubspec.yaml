@@ -1,7 +1,7 @@
 name: app_hobbystore
 description: "A new Flutter project."
 publish_to: 'none'
-version: 0.3.0+4
+version: 0.4.0+5
 
 environment:
   sdk: ^3.12.1
@@ -14,6 +14,7 @@ dependencies:
   otp_auth:
     path: ../packages/otp_auth
   provider: ^6.1.5+1
+  url_launcher: ^6.3.2
 
 dev_dependencies:
   flutter_test:
