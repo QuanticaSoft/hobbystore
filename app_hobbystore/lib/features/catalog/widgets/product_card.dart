@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/format/price.dart';
 import '../../../core/widgets/network_picture.dart';
+import '../../favorites/favorite_button.dart';
 import '../catalog_models.dart';
 import '../product_detail_screen.dart';
 
@@ -54,6 +55,11 @@ class ProductCard extends StatelessWidget {
                       left: 8,
                       child: _Badge(label: 'Usado'),
                     ),
+                  Positioned(
+                    top: 4,
+                    right: 4,
+                    child: FavoriteButton(productId: product.id, onImage: true),
+                  ),
                 ],
               ),
             ),

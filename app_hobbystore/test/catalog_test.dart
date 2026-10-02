@@ -1,6 +1,6 @@
+import 'package:app_hobbystore/app.dart';
 import 'package:app_hobbystore/core/format/price.dart';
 import 'package:app_hobbystore/features/catalog/catalog_models.dart';
-import 'package:app_hobbystore/features/catalog/catalog_repository.dart';
 import 'package:app_hobbystore/features/catalog/categories_tab.dart';
 import 'package:app_hobbystore/features/catalog/product_detail_screen.dart';
 import 'package:app_hobbystore/features/catalog/product_list_screen.dart';
@@ -8,7 +8,6 @@ import 'package:app_hobbystore/features/catalog/search_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
-import 'package:provider/provider.dart';
 
 import 'test_helpers.dart';
 
@@ -19,8 +18,8 @@ Future<void> pumpWithCatalog(
 ) async {
   usePhoneScreen(tester);
   await tester.pumpWidget(
-    Provider(
-      create: (_) => CatalogRepository(fakeApi(handler)),
+    AppProviders(
+      api: fakeApi(handler),
       child: MaterialApp(home: child),
     ),
   );

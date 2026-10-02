@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import '../../core/format/price.dart';
 import '../../core/widgets/error_retry.dart';
 import '../../core/widgets/network_picture.dart';
+import '../cart/add_to_cart_button.dart';
+import '../favorites/favorite_button.dart';
 import 'catalog_models.dart';
 import 'catalog_repository.dart';
 import 'store_screen.dart';
@@ -32,35 +34,39 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(),
-      body: FutureBuilder(
-        future: _product,
-        builder: (context, snapshot) {
-          final product = snapshot.data;
-          if (product != null) return _ProductBody(product: product);
-          if (snapshot.hasError) {
-            return ErrorRetry(
-              message: errorMessageOf(snapshot.error),
-              onRetry: () => setState(() {
-                _product = _load();
-              }),
-            );
-          }
-          return const Center(child: CircularProgressIndicator());
-        },
-      ),
-      // El carrito llega en la Fase 3; el botón queda visible pero inactivo.
-      bottomNavigationBar: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-          child: FilledButton.icon(
-            onPressed: null,
-            icon: const Icon(Icons.add_shopping_cart),
-            label: const Text('Añadir al carrito (muy pronto)'),
+    return FutureBuilder(
+      future: _product,
+      builder: (context, snapshot) {
+        final product = snapshot.data;
+        return Scaffold(
+          appBar: AppBar(
+            actions: [
+              if (product != null) FavoriteButton(productId: product.id),
+            ],
           ),
-        ),
-      ),
+          body: product != null
+              ? _ProductBody(product: product)
+              : snapshot.hasError
+              ? ErrorRetry(
+                  message: errorMessageOf(snapshot.error),
+                  onRetry: () => setState(() {
+                    _product = _load();
+                  }),
+                )
+              : const Center(child: CircularProgressIndicator()),
+          bottomNavigationBar: product == null
+              ? null
+              : SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                    child: AddToCartButton(
+                      productId: product.id,
+                      stock: product.stock,
+                    ),
+                  ),
+                ),
+        );
+      },
     );
   }
 }
