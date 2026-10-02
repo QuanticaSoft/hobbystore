@@ -1,27 +1,21 @@
 # Hobby Store: Progreso
 
-Última actualización: 2026-10-01 · Fase actual: **2: Catálogo + Home** (en staging, falta probar en dispositivo)
+Última actualización: 2026-10-01 · Fase actual: **3: Favoritos + Carrito** (por iniciar)
 
 ## Dónde quedamos
-- **Fase 2 con merge en `develop`** (PR #4).
-- **En staging:**
-  - Migración 002, demo cargada (4 banners, 3 tiendas, 20 productos), API 0.2.0.
-  - Media en `/hobbystore/media-staging`, protegida con `.htaccess` (sin listado, sin PHP).
-  - `media_base_url` configurada en los `config.local.php` de staging y prod.
-- **Bugs que reportó el usuario en el iPhone** (rama `fix/navegacion-providers`):
-  1. Pantalla roja al tocar una tienda o un producto → corregido (providers por encima de `MaterialApp`). Hay un test de la app completa que lo reproduce.
-  2. "No hay botón para salir": en iOS las apps no se cierran desde un botón (Apple lo rechaza). Se sale con el gesto de inicio y la sesión queda guardada. "Cerrar sesión" ahora pide confirmación y lo explica.
-- **Siguiente paso:**
-  1. El usuario vuelve a probar en el iPhone con `ENV=staging` (incluido: cerrar la app y reabrirla debe entrar sin pedir código).
-  2. Release `v0.2.0`: prod solo con migración y deploy, sin demo.
-- **Decidido:** prod sale con el catálogo vacío; se llena con la Fase 6 (ver DECISIONS).
+- **Fase 2 cerrada: release `v0.2.0`** (2026-10-01).
+  - Probada por el usuario en su teléfono con `ENV=staging`.
+  - En el camino se corrigió la pantalla roja al navegar (PR #5).
+  - Prod sale **sin catálogo**: Home vacío hasta la Fase 6.
+- **Siguiente paso:** Fase 3 (favoritos + carrito por vendedor) en `feature/f3-favoritos-carrito`.
+- **Verificación pendiente del usuario:** cerrar la app con el gesto y reabrirla debe entrar sin pedir código.
 
 ## Estado por fase
 | Fase | Estado | Notas |
 |---|---|---|
 | 0 Fundaciones | ✅ | v0.0.1 en staging y prod, `public` verificado, repo en GitHub |
 | 1 Login + esqueleto app | ✅ | v0.1.0: login OTP, shell con 5 tabs, perfil; probado en iPhone |
-| 2 Catálogo + Home | 🔄 | En staging; falta la prueba en el dispositivo y el release v0.2.0 |
+| 2 Catálogo + Home | ✅ | v0.2.0: Home, categorías, búsqueda, detalle y tienda; demo en staging |
 | 3 Favoritos + Carrito | ⏳ | |
 | 4 Pedido → WhatsApp | ⏳ | |
 | 5 Vender (particulares) | ⏳ | |
@@ -31,6 +25,10 @@
 ## Features
 
 ### ✅ Hecho
+- **Fase 2 (v0.2.0):**
+  - API pública del catálogo (home, categorías, productos con filtros, búsqueda y paginación, detalle y tienda) + migración 002.
+  - App: Home (buscador, banners, tiendas, novedades), Categorías, listado con scroll infinito, búsqueda, detalle y tienda.
+  - Demo con `seed.sh` (solo dev y staging). Media protegida en flamenco.
 - **Fase 1 (v0.1.0):**
   - Login OTP → shell con 5 tabs, perfil (nombre y ciudad), cerrar sesión, sesión expirada.
   - API `GET/PATCH /v1/me` con validación contra el OTP + `auth_cache`.
@@ -43,11 +41,7 @@
 - `scripts/deploy.sh` y `scripts/backup.sh` con validación de rama, tag y entorno
 
 ### 🔄 En proceso
-- **Fase 2** (`feature/f2-catalogo-home`):
-  - API pública: `/v1/home`, `/v1/categories`, `/v1/products` (category, store, q, page), `/v1/products/{id}`, `/v1/stores/{slug}`.
-  - Migración `002_catalog` (12 categorías reales). Demo con `seed.sh dev|staging`.
-  - App: Home (buscador, carrusel `CarouselView`, tiendas, novedades), Categorías, listado con scroll infinito, búsqueda, detalle (galería, vendedor, entrega) y tienda.
-  - "Añadir al carrito" visible pero inactivo (llega en la Fase 3). Sin botón de WhatsApp (Fase 4, falta aprobar `url_launcher`).
+- (nada)
 
 ### ⏳ Pendiente
 - Fases 2 a 7: detalle de cada fase en `docs/PLAN.md`.
@@ -55,12 +49,12 @@
 ### 🧊 Postergado (post-MVP)
 - Pago QR o pasarela, reseñas y rating, push notifications, chat interno, búsqueda full-text, versión web, envíos con tarifa.
 
-## Checklist Fase 2
+## Checklist Fase 2 (cerrada)
 - [x] `flutter analyze` sin issues · `flutter test` 22/22 (incluye un test de la app completa: navegación y cierre de sesión)
 - [x] API dev: home, categorías con conteo, filtros, búsqueda (con escape de `%`, `_` y `!`, sin distinguir mayúsculas), paginación, 404, detalle de tienda y de particular
 - [x] `seed.sh dev` es idempotente (dos corridas → 3 tiendas, 20 productos, 24 imágenes, 4 banners)
 - [x] staging: migración 002 + demo + deploy; imágenes por HTTPS ✅
-- [ ] Dispositivo: Home → banner/tienda → producto → galería; Categorías → listado; búsqueda; scroll infinito
+- [x] Dispositivo: navegación Home → tienda/producto (tras el arreglo del PR #5)
 
 ## Checklist Fase 1 (cerrada)
 - [x] `flutter analyze` sin issues · `flutter test` 10/10
@@ -95,3 +89,4 @@
 |---|---|---|---|
 | v0.0.1 | 2026-09-30 | staging + prod | Fase 0: monorepo, API `/v1/health` y `/v1/config`, migración 001 |
 | v0.1.0 | 2026-09-30 | staging + prod | Fase 1: login OTP, shell con 5 tabs, perfil, `/v1/me` |
+| v0.2.0 | 2026-10-01 | staging + prod | Fase 2: catálogo y Home (prod sin datos hasta la Fase 6) |

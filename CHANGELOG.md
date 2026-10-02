@@ -3,6 +3,10 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y [SemVer](https://semver.org/lang/es/).
 
 ## [Unreleased]
+
+## [0.2.0] - 2026-10-01
+Fase 2: catálogo y Home.
+
 ### Added
 - API: `/v1/home`, `/v1/categories`, `/v1/products` (filtros, búsqueda y paginación), `/v1/products/{id}` y `/v1/stores/{slug}`.
 - BD: migración `002_catalog` (categorías, tiendas, productos, imágenes y banners), con 12 categorías.
