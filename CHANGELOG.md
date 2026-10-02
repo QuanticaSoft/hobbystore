@@ -3,6 +3,10 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y [SemVer](https://semver.org/lang/es/).
 
 ## [Unreleased]
+
+## [0.3.0] - 2026-10-02
+Fase 3: favoritos y carrito.
+
 ### Added
 - BD: migración `003_favorites_cart`.
 - API: `/v1/favorites` (GET, PUT, DELETE) y `/v1/cart` (GET, PUT con cantidad, DELETE), con sesión. El carrito se agrupa por vendedor y valida stock, cantidad y producto propio.

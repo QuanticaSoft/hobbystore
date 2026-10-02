@@ -1,15 +1,14 @@
 # Hobby Store: Progreso
 
-Última actualización: 2026-10-02 · Fase actual: **3: Favoritos + Carrito** (en staging, falta probar en dispositivo)
+Última actualización: 2026-10-02 · Fase actual: **4: Pedido → WhatsApp** (por iniciar)
 
 ## Dónde quedamos
-- **Fase 2 cerrada: release `v0.2.0`** (2026-10-01).
-  - Probada por el usuario en su teléfono con `ENV=staging`.
-  - En el camino se corrigió la pantalla roja al navegar (PR #5).
-  - Prod sale **sin catálogo**: Home vacío hasta la Fase 6.
-- **Fase 3 en staging** (PR #7 con merge): migración 003 aplicada, API 0.3.0. Endpoints protegidos (401 sin sesión y con token inválido).
-  - Siguiente: el usuario prueba en el teléfono con `ENV=staging` → release `v0.3.0`.
-- **Verificación pendiente del usuario:** cerrar la app con el gesto y reabrirla debe entrar sin pedir código.
+- **Fase 3 cerrada: release `v0.3.0`** (2026-10-02).
+  - Probada por el usuario en su teléfono con `ENV=staging`: favoritos, carrito por vendedor, stock, contador.
+  - La sesión, los favoritos y el carrito persisten al cerrar y reabrir la app, sin pedir código.
+- **Siguiente paso:** Fase 4 (pedido → WhatsApp) en `feature/f4-pedidos-whatsapp`.
+  - Requiere aprobar `url_launcher`.
+  - Las tiendas ya tienen `whatsapp_phone`. Para los particulares falta definir el número: ¿el mismo teléfono verificado por OTP?
 
 ## Estado por fase
 | Fase | Estado | Notas |
@@ -17,7 +16,7 @@
 | 0 Fundaciones | ✅ | v0.0.1 en staging y prod, `public` verificado, repo en GitHub |
 | 1 Login + esqueleto app | ✅ | v0.1.0: login OTP, shell con 5 tabs, perfil; probado en iPhone |
 | 2 Catálogo + Home | ✅ | v0.2.0: Home, categorías, búsqueda, detalle y tienda; demo en staging |
-| 3 Favoritos + Carrito | 🔄 | En staging; falta la prueba en el dispositivo y el release v0.3.0 |
+| 3 Favoritos + Carrito | ✅ | v0.3.0: ♥ + tab Favoritos, carrito por vendedor con + / −, contador |
 | 4 Pedido → WhatsApp | ⏳ | |
 | 5 Vender (particulares) | ⏳ | |
 | 6 Tiendas + Admin | ⏳ | |
@@ -26,6 +25,9 @@
 ## Features
 
 ### ✅ Hecho
+- **Fase 3 (v0.3.0):**
+  - Migración 003. API con sesión: `/v1/favorites` y `/v1/cart`, agrupado por vendedor, con validación de stock y de producto propio.
+  - App: ♥ (tarjeta y detalle) + tab Favoritos; "Añadir al carrito" + tab Carrito (+ / −, subtotales) + contador. `AppProviders` compartido con los tests.
 - **Fase 2 (v0.2.0):**
   - API pública del catálogo (home, categorías, productos con filtros, búsqueda y paginación, detalle y tienda) + migración 002.
   - App: Home (buscador, banners, tiendas, novedades), Categorías, listado con scroll infinito, búsqueda, detalle y tienda.
@@ -42,10 +44,7 @@
 - `scripts/deploy.sh` y `scripts/backup.sh` con validación de rama, tag y entorno
 
 ### 🔄 En proceso
-- **Fase 3** (PR #7 con merge, en staging):
-  - Migración 003 (`favorites`, `cart_items`). API con sesión: `/v1/favorites` y `/v1/cart`, agrupado por vendedor, con validación de stock y de producto propio.
-  - App: ♥ (tarjeta y detalle) + tab Favoritos; "Añadir al carrito" + tab Carrito (por vendedor, + / −, subtotales) + contador en la barra.
-  - El botón "Pedir a <vendedor>" ya aparece, inactivo hasta la Fase 4.
+- (nada)
 
 ### ⏳ Pendiente
 - Fases 2 a 7: detalle de cada fase en `docs/PLAN.md`.
@@ -53,12 +52,12 @@
 ### 🧊 Postergado (post-MVP)
 - Pago QR o pasarela, reseñas y rating, push notifications, chat interno, búsqueda full-text, versión web, envíos con tarifa.
 
-## Checklist Fase 3
+## Checklist Fase 3 (cerrada)
 - [x] `flutter analyze` sin issues · `flutter test` 27/27 (incluye backend falso con estado para favoritos y carrito)
 - [x] API dev: 401 sin sesión, favoritos idempotentes, 404, agrupación por vendedor, totales, stock (409), cantidad 1 a 99, producto propio (400)
 - [x] Builds: simulador iOS ✅ · APK debug ✅
 - [x] staging: migración 003 + deploy (API 0.3.0)
-- [ ] Dispositivo: ♥ en tarjeta y detalle, tab Favoritos, añadir al carrito, + / −, contador, cerrar sesión vacía todo
+- [x] Dispositivo: ♥, tab Favoritos, carrito por vendedor, + / −, stock, contador y persistencia al reabrir
 
 ## Checklist Fase 2 (cerrada)
 - [x] `flutter analyze` sin issues · `flutter test` 22/22 (incluye un test de la app completa: navegación y cierre de sesión)
@@ -101,3 +100,4 @@
 | v0.0.1 | 2026-09-30 | staging + prod | Fase 0: monorepo, API `/v1/health` y `/v1/config`, migración 001 |
 | v0.1.0 | 2026-09-30 | staging + prod | Fase 1: login OTP, shell con 5 tabs, perfil, `/v1/me` |
 | v0.2.0 | 2026-10-01 | staging + prod | Fase 2: catálogo y Home (prod sin datos hasta la Fase 6) |
+| v0.3.0 | 2026-10-02 | staging + prod | Fase 3: favoritos y carrito por vendedor |
