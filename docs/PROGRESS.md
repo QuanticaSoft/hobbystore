@@ -8,8 +8,11 @@
   - Migración 002, demo cargada (4 banners, 3 tiendas, 20 productos), API 0.2.0.
   - Media en `/hobbystore/media-staging`, protegida con `.htaccess` (sin listado, sin PHP).
   - `media_base_url` configurada en los `config.local.php` de staging y prod.
+- **Bugs que reportó el usuario en el iPhone** (rama `fix/navegacion-providers`):
+  1. Pantalla roja al tocar una tienda o un producto → corregido (providers por encima de `MaterialApp`). Hay un test de la app completa que lo reproduce.
+  2. "No hay botón para salir": en iOS las apps no se cierran desde un botón (Apple lo rechaza). Se sale con el gesto de inicio y la sesión queda guardada. "Cerrar sesión" ahora pide confirmación y lo explica.
 - **Siguiente paso:**
-  1. El usuario prueba en el iPhone con `ENV=staging`.
+  1. El usuario vuelve a probar en el iPhone con `ENV=staging` (incluido: cerrar la app y reabrirla debe entrar sin pedir código).
   2. Release `v0.2.0`: prod solo con migración y deploy, sin demo.
 - **Decidido:** prod sale con el catálogo vacío; se llena con la Fase 6 (ver DECISIONS).
 
@@ -53,7 +56,7 @@
 - Pago QR o pasarela, reseñas y rating, push notifications, chat interno, búsqueda full-text, versión web, envíos con tarifa.
 
 ## Checklist Fase 2
-- [x] `flutter analyze` sin issues · `flutter test` 20/20
+- [x] `flutter analyze` sin issues · `flutter test` 22/22 (incluye un test de la app completa: navegación y cierre de sesión)
 - [x] API dev: home, categorías con conteo, filtros, búsqueda (con escape de `%`, `_` y `!`, sin distinguir mayúsculas), paginación, 404, detalle de tienda y de particular
 - [x] `seed.sh dev` es idempotente (dos corridas → 3 tiendas, 20 productos, 24 imágenes, 4 banners)
 - [x] staging: migración 002 + demo + deploy; imágenes por HTTPS ✅
