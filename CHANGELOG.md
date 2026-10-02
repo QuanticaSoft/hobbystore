@@ -3,6 +3,16 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y [SemVer](https://semver.org/lang/es/).
 
 ## [Unreleased]
+### Added
+- BD: migración `005_seller_products` (índice por vendedor).
+- API: `/v1/my/products` (listar, crear pausada, editar, cambiar estado, baja lógica) y fotos (`POST/DELETE .../images`) con validación, orientación EXIF, miniatura y **sin metadatos GPS**. Límite de 5 activas para particulares.
+- App: "Vender" en el Inicio y Perfil › "Mis publicaciones" (contador de activas, publicar, pausar, marcar vendida, editar, eliminar).
+- App: formulario con fotos (galería o cámara, hasta 5, reducidas en el teléfono), categoría, precio (acepta "1.250", "1250,50" y "12.5"), unidades, nuevo o usado y descripción.
+- Dependencia: `image_picker`. iOS: textos de permiso de fotos y cámara.
+- PHP: límite de subida de 8 MB (`.user.ini` en flamenco, `uploads.ini` en Docker).
+
+### Fixed
+- App: el desplegable de categoría desbordaba con nombres largos en pantallas angostas.
 
 ## [0.4.0] - 2026-10-02
 Fase 4: pedidos por WhatsApp.
