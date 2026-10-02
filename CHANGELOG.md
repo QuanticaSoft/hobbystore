@@ -3,6 +3,12 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y [SemVer](https://semver.org/lang/es/).
 
 ## [Unreleased]
+### Added
+- API: `/v1/home`, `/v1/categories`, `/v1/products` (filtros, búsqueda y paginación), `/v1/products/{id}` y `/v1/stores/{slug}`.
+- BD: migración `002_catalog` (categorías, tiendas, productos, imágenes y banners), con 12 categorías.
+- Demo: `scripts/seed.sh dev|staging` con 3 tiendas, 20 productos y 4 banners.
+- App: Home con buscador, carrusel de banners, tiendas destacadas y novedades.
+- App: tab Categorías, listado con scroll infinito, búsqueda, detalle de producto (galería, vendedor, entrega) y página de tienda.
 
 ## [0.1.0] - 2026-09-30
 Fase 1: login y esqueleto de la app.
