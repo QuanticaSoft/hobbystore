@@ -6,11 +6,13 @@ import 'core/api/api_client.dart';
 import 'core/links/external_links.dart';
 import 'core/photos/photo_picker.dart';
 import 'core/theme/app_theme.dart';
+import 'features/admin/admin_repository.dart';
 import 'features/cart/cart_store.dart';
 import 'features/catalog/catalog_repository.dart';
 import 'features/favorites/favorites_store.dart';
 import 'features/orders/orders_repository.dart';
 import 'features/sell/my_products_repository.dart';
+import 'features/store/my_store_repository.dart';
 import 'features/session/user_session.dart';
 import 'features/shell/home_shell.dart';
 
@@ -86,6 +88,8 @@ class AppProviders extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => CartStore(api)),
         Provider(create: (_) => OrdersRepository(api)),
         Provider(create: (_) => MyProductsRepository(api)),
+        Provider(create: (_) => MyStoreRepository(api)),
+        Provider(create: (_) => AdminRepository(api)),
       ],
       child: child,
     );

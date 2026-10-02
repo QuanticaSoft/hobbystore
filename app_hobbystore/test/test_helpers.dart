@@ -9,12 +9,16 @@ import 'package:otp_auth/otp_auth.dart';
 
 const testToken = 'AbCdEfGhIjKlMnOpQrStUvWxYz0123456789_-abcde';
 
-Map<String, dynamic> userJson({String? displayName, String? city}) => {
+Map<String, dynamic> userJson({
+  String? displayName,
+  String? city,
+  bool isAdmin = false,
+}) => {
   'id': 1,
   'phone': '+59170000001',
   'display_name': displayName,
   'city': city,
-  'is_admin': false,
+  'is_admin': isAdmin,
 };
 
 /// [ApiClient] contra un servidor falso; [requests] guarda lo que se envió.

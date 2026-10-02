@@ -36,6 +36,16 @@ class FakeShop {
   final orders = <Map<String, dynamic>>[];
   final requests = <String>[];
   String? displayName = 'Marco';
+  bool isAdmin = false;
+
+  /// null: el usuario publica como tienda (sin tope).
+  int? activeLimit = 5;
+
+  /// Tienda propia (null: no solicitó) y datos que ve el admin.
+  Map<String, dynamic>? myStore;
+  final adminStores = <Map<String, dynamic>>[];
+  final adminBanners = <Map<String, dynamic>>[];
+  final removedProducts = <int>[];
 
   /// Pedidos que el usuario recibió como vendedor (role=seller).
   final receivedOrders = <Map<String, dynamic>>[];
@@ -51,14 +61,26 @@ class FakeShop {
     final segments = path.split('/');
     final id = segments.length > 2 ? int.tryParse(segments[2]) : null;
 
+    if (segments.length > 2 && segments[1] == 'my' && segments[2] == 'store') {
+      return _myStore(request, segments.sublist(3));
+    }
     if (segments.length > 2 && segments[1] == 'my') {
       return _myProducts(request, segments.sublist(3));
+    }
+    if (segments.length > 2 && segments[1] == 'admin') {
+      return isAdmin
+          ? _admin(request, segments.sublist(2))
+          : _error('Solo para administradores.', 403);
     }
 
     switch ((request.method, segments.length > 1 ? segments[1] : '')) {
       case ('GET', 'me'):
         return jsonResponse({
-          'user': userJson(displayName: displayName, city: 'La Paz'),
+          'user': userJson(
+            displayName: displayName,
+            city: 'La Paz',
+            isAdmin: isAdmin,
+          ),
           'is_new': false,
         });
       case ('GET', 'home'):
@@ -149,7 +171,7 @@ class FakeShop {
         return jsonResponse({
           'products': myProducts.reversed.toList(),
           'active_count': activeCount(),
-          'active_limit': 5,
+          'active_limit': activeLimit,
         });
       case ('POST', 0):
         final body = jsonDecode(request.body) as Map<String, dynamic>;
@@ -206,6 +228,77 @@ class FakeShop {
           (image) => image['id'] == int.parse(rest[2]),
         );
         return jsonResponse({'product': product});
+    }
+    return _error('No encontrado.', 404);
+  }
+
+  http.Response _myStore(http.Request request, List<String> rest) {
+    switch ((request.method, rest.isEmpty ? '' : rest[0])) {
+      case ('GET', ''):
+        return jsonResponse({'store': myStore});
+      case ('POST', ''):
+        if (myStore != null) {
+          return _error('Ya tienes una tienda registrada.', 409);
+        }
+        final body = jsonDecode(request.body) as Map<String, dynamic>;
+        myStore = {
+          ...body,
+          'slug': 'mi-tienda',
+          'logo_url': null,
+          'status': 'pending',
+          'is_featured': false,
+          'review_note': null,
+        };
+        return jsonResponse({'store': myStore}, 201);
+      case ('PATCH', ''):
+        myStore!.addAll(jsonDecode(request.body) as Map<String, dynamic>);
+        return jsonResponse({'store': myStore});
+      case ('POST', 'logo'):
+        myStore!['logo_url'] = '';
+        return jsonResponse({'store': myStore});
+    }
+    return _error('No encontrado.', 404);
+  }
+
+  http.Response _admin(http.Request request, List<String> rest) {
+    switch ((request.method, rest[0], rest.length)) {
+      case ('GET', 'stores', 1):
+        final status = request.url.queryParameters['status'];
+        return jsonResponse({
+          'stores': adminStores.where((s) => s['status'] == status).toList(),
+        });
+      case ('PATCH', 'stores', 2):
+        final store = adminStores.firstWhere((s) => s['slug'] == rest[1]);
+        store.addAll(jsonDecode(request.body) as Map<String, dynamic>);
+        return jsonResponse({'store': store});
+      case ('GET', 'banners', 1):
+        return jsonResponse({'banners': adminBanners});
+      case ('POST', 'banners', 1):
+        final banner = {
+          'id': adminBanners.length + 1,
+          // MockClient entrega el multipart crudo: el título viaja en el cuerpo.
+          'title': RegExp(r'name="title"\r\n\r\n(.*?)\r\n')
+              .firstMatch(utf8.decode(request.bodyBytes, allowMalformed: true))
+              ?.group(1),
+          'image_url': '',
+          'active': true,
+          'sort': 10,
+        };
+        adminBanners.add(banner);
+        return jsonResponse({'banner': banner}, 201);
+      case ('PATCH', 'banners', 2):
+        final banner = adminBanners.firstWhere((b) => '${b['id']}' == rest[1]);
+        banner.addAll(jsonDecode(request.body) as Map<String, dynamic>);
+        return jsonResponse({'banner': banner});
+      case ('DELETE', 'banners', 2):
+        adminBanners.removeWhere((b) => '${b['id']}' == rest[1]);
+        return jsonResponse({'deleted': true});
+      case ('DELETE', 'products', 2):
+        removedProducts.add(int.parse(rest[1]));
+        return jsonResponse({
+          'product_id': int.parse(rest[1]),
+          'status': 'removed',
+        });
     }
     return _error('No encontrado.', 404);
   }
