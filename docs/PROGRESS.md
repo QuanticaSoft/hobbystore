@@ -1,15 +1,15 @@
 # Hobby Store: Progreso
 
-Última actualización: 2026-10-02 · Fase actual: **5: Vender (particulares)** (en staging, falta probar en dispositivo)
+Última actualización: 2026-10-02 · Fase actual: **6: Tiendas + Admin** (por iniciar)
 
 ## Dónde quedamos
-- **Fase 4 cerrada: release `v0.4.0`** (2026-10-02).
-  - El usuario la probó en su teléfono con `ENV=staging`: pedido a Garage RC → WhatsApp real con el mensaje, Mis compras, escribir al vendedor y cancelar.
-  - **Pendiente para la Fase 6:** probar "Pedidos recibidos" en el dispositivo, con una tienda de dueño real.
-  - Staging: el WhatsApp de Garage RC apunta a un número real de prueba (solo en la BD). Un `seed.sh staging` lo revierte: avisar antes.
-- **Fase 5 en staging** (PR #11 con merge): migración 005, API 0.5.0, `media_dir` configurado en staging y prod.
-  - Verificado con una sonda temporal (ya borrada): PHP-FPM puede escribir en la media pese a SELinux, y `.user.ini` aplica 8M/10M.
-  - Siguiente: el usuario prueba en el teléfono → release `v0.5.0`.
+- **Fase 5 cerrada: release `v0.5.0`** (2026-10-02).
+  - El usuario la probó en su teléfono con `ENV=staging`: publicar con galería y cámara, editar, pausar, vender y eliminar.
+- **Siguiente paso:** Fase 6 (tiendas + admin) en `feature/f6-tiendas-admin`.
+  - "Quiero ser tienda" (alta en `pending`) → el admin aprueba, suspende o destaca → la tienda publica sin tope y aparece en el Home.
+  - Admin en la app (`is_admin`): tiendas, banners y retiro de productos.
+  - Pendiente desde la Fase 4: probar "Pedidos recibidos" en el dispositivo con una tienda de dueño real.
+  - Staging: Garage RC apunta a un WhatsApp real de prueba (solo en la BD).
 
 ## Estado por fase
 | Fase | Estado | Notas |
@@ -19,13 +19,16 @@
 | 2 Catálogo + Home | ✅ | v0.2.0: Home, categorías, búsqueda, detalle y tienda; demo en staging |
 | 3 Favoritos + Carrito | ✅ | v0.3.0: ♥ + tab Favoritos, carrito por vendedor con + / −, contador |
 | 4 Pedido → WhatsApp | ✅ | v0.4.0: pedido por vendedor → WhatsApp, Mis compras / Pedidos recibidos |
-| 5 Vender (particulares) | 🔄 | En staging; falta la prueba en el dispositivo y el release v0.5.0 |
+| 5 Vender (particulares) | ✅ | v0.5.0: Mis publicaciones, formulario con fotos, límite de 5, fotos sin GPS |
 | 6 Tiendas + Admin | ⏳ | |
 | 7 Publicación en tiendas | ⏳ | |
 
 ## Features
 
 ### ✅ Hecho
+- **Fase 5 (v0.5.0):**
+  - API `/v1/my/products` + fotos (tipo real, EXIF, miniatura, sin GPS), límite de 5 activas, baja lógica.
+  - App: "Vender" y "Mis publicaciones"; formulario con galería y cámara; publicar = crear pausada → subir → activar.
 - **Fase 4 (v0.4.0):**
   - Migración 004. `POST /v1/orders` (mensaje `wa.me` armado en el servidor; particulares a su celular verificado), listado por rol y cambio de estado con transiciones.
   - App: "Pedir a <vendedor>" con nota → WhatsApp; Perfil › Mis compras / Pedidos recibidos.
@@ -48,9 +51,7 @@
 - `scripts/deploy.sh` y `scripts/backup.sh` con validación de rama, tag y entorno
 
 ### 🔄 En proceso
-- **Fase 5** (PR #11 con merge, en staging):
-  - API `/v1/my/products` + fotos (validación, EXIF, miniatura, sin GPS), límite de 5 activas, baja lógica.
-  - App: "Vender" (Inicio) y "Mis publicaciones" (Perfil); formulario con fotos de galería o cámara, publicar = crear pausada → subir → activar, con reintento sin duplicar.
+- (nada)
 
 ### ⏳ Pendiente
 - Fases 2 a 7: detalle de cada fase en `docs/PLAN.md`.
@@ -58,13 +59,13 @@
 ### 🧊 Postergado (post-MVP)
 - Pago QR o pasarela, reseñas y rating, push notifications, chat interno, búsqueda full-text, versión web, envíos con tarifa.
 
-## Checklist Fase 5
+## Checklist Fase 5 (cerrada)
 - [x] `flutter analyze` sin issues · `flutter test` 38/38 (publicar, sin fotos, reintento sin duplicar, límite de 5, vender y eliminar, parsePrice)
 - [x] API dev: crear, validaciones, foto inválida (415), 6.ª foto (409), activar sin foto o sin stock (409), límite 5 (409) y liberar cupo al vender, última foto de una activa (409), borrado del archivo, otro usuario (404), fotos sin EXIF ni GPS
 - [x] Subida real desde el `ApiClient` de la app contra la API dev (multipart)
 - [x] Builds: simulador iOS ✅ · APK debug ✅
 - [x] staging: `media_dir` + migración 005 + deploy; PHP-FPM escribe en la media; `.user.ini` 403 y aplicado
-- [ ] Dispositivo: publicar con fotos de galería y de cámara (orientación correcta), editar, pausar, vender, eliminar; verla en el catálogo
+- [x] Dispositivo: publicar con galería y cámara, editar, pausar, vender, eliminar; verla en el catálogo
 
 ## Checklist Fase 4 (cerrada)
 - [x] `flutter analyze` sin issues · `flutter test` 32/32 (pedido → WhatsApp, sin nombre, WhatsApp que no abre, cancelación del comprador, confirmación del vendedor)
@@ -124,3 +125,4 @@
 | v0.2.0 | 2026-10-01 | staging + prod | Fase 2: catálogo y Home (prod sin datos hasta la Fase 6) |
 | v0.3.0 | 2026-10-02 | staging + prod | Fase 3: favoritos y carrito por vendedor |
 | v0.4.0 | 2026-10-02 | staging + prod | Fase 4: pedidos por WhatsApp |
+| v0.5.0 | 2026-10-02 | staging + prod | Fase 5: vender (publicaciones de particulares) |

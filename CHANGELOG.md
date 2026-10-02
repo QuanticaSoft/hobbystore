@@ -3,6 +3,10 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y [SemVer](https://semver.org/lang/es/).
 
 ## [Unreleased]
+
+## [0.5.0] - 2026-10-02
+Fase 5: vender (publicaciones de particulares).
+
 ### Added
 - BD: migración `005_seller_products` (índice por vendedor).
 - API: `/v1/my/products` (listar, crear pausada, editar, cambiar estado, baja lógica) y fotos (`POST/DELETE .../images`) con validación, orientación EXIF, miniatura y **sin metadatos GPS**. Límite de 5 activas para particulares.
