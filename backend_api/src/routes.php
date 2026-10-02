@@ -112,3 +112,45 @@ $router->delete('/v1/my/products/{id}/images/{image_id}', $withUser(
     static fn(PDO $pdo, int $userId, string $id, string $imageId) =>
         MyProductsController::deleteImage($pdo, $config, $userId, $id, $imageId)
 ));
+
+// Mi tienda.
+$router->get('/v1/my/store', $withUser(static fn(PDO $pdo, int $userId) =>
+    MyStoreController::show($pdo, $config, $userId)));
+
+$router->post('/v1/my/store', $withUser(static fn(PDO $pdo, int $userId) =>
+    MyStoreController::create($pdo, $config, $userId)));
+
+$router->patch('/v1/my/store', $withUser(static fn(PDO $pdo, int $userId) =>
+    MyStoreController::update($pdo, $config, $userId)));
+
+$router->post('/v1/my/store/logo', $withUser(static fn(PDO $pdo, int $userId) =>
+    MyStoreController::uploadLogo($pdo, $config, $userId)));
+
+// Administración: requiere users.is_admin.
+$withAdmin = static function (callable $handler) use ($withUser): callable {
+    return $withUser(static function (PDO $pdo, int $userId, string ...$params) use ($handler): never {
+        AdminController::requireAdmin($pdo, $userId);
+        $handler($pdo, ...$params);
+    });
+};
+
+$router->get('/v1/admin/stores', $withAdmin(static fn(PDO $pdo) =>
+    AdminController::stores($pdo, $config)));
+
+$router->patch('/v1/admin/stores/{slug}', $withAdmin(static fn(PDO $pdo, string $slug) =>
+    AdminController::updateStore($pdo, $config, $slug)));
+
+$router->get('/v1/admin/banners', $withAdmin(static fn(PDO $pdo) =>
+    AdminController::banners($pdo, $config)));
+
+$router->post('/v1/admin/banners', $withAdmin(static fn(PDO $pdo) =>
+    AdminController::createBanner($pdo, $config)));
+
+$router->patch('/v1/admin/banners/{id}', $withAdmin(static fn(PDO $pdo, string $id) =>
+    AdminController::updateBanner($pdo, $config, $id)));
+
+$router->delete('/v1/admin/banners/{id}', $withAdmin(static fn(PDO $pdo, string $id) =>
+    AdminController::deleteBanner($pdo, $config, $id)));
+
+$router->delete('/v1/admin/products/{id}', $withAdmin(static fn(PDO $pdo, string $id) =>
+    AdminController::removeProduct($pdo, $id)));

@@ -24,10 +24,12 @@ final class MyProductsController
         $statement->execute([$userId]);
         $ids = array_map('intval', $statement->fetchAll(PDO::FETCH_COLUMN));
 
+        $hasStore = self::ownStoreId($pdo, $userId) !== null;
         Response::json([
             'products' => array_map(static fn(int $id) => self::load($pdo, $config, $id), $ids),
             'active_count' => self::activeParticularCount($pdo, $userId),
-            'active_limit' => self::PARTICULAR_ACTIVE_LIMIT,
+            // Las tiendas no tienen tope.
+            'active_limit' => $hasStore ? null : self::PARTICULAR_ACTIVE_LIMIT,
         ]);
     }
 
@@ -42,11 +44,16 @@ final class MyProductsController
 
         $fields = self::validatedFields(self::jsonBody(), $pdo, requireAll: true);
         $statement = $pdo->prepare(
-            "INSERT INTO products (seller_user_id, category_id, title, description, price_bob, condition, stock, city, status)
-             VALUES (:seller, :category_id, :title, :description, :price_bob, :condition, :stock, :city, 'paused')
+            "INSERT INTO products (seller_user_id, store_id, category_id, title, description, price_bob, condition, stock, city, status)
+             VALUES (:seller, :store_id, :category_id, :title, :description, :price_bob, :condition, :stock, :city, 'paused')
              RETURNING id"
         );
-        $statement->execute([...$fields, 'seller' => $userId, 'city' => $profile['city']]);
+        $statement->execute([
+            ...$fields,
+            'seller' => $userId,
+            'store_id' => self::ownStoreId($pdo, $userId),
+            'city' => $profile['city'],
+        ]);
 
         Response::json(['product' => self::load($pdo, $config, (int) $statement->fetchColumn())], 201);
     }
@@ -145,6 +152,21 @@ final class MyProductsController
                 409
             );
         }
+    }
+
+    /**
+     * Tienda del usuario ya revisada por el admin. Con la tienda suspendida
+     * también se publica como tienda: así la suspensión no se esquiva
+     * publicando como particular.
+     */
+    private static function ownStoreId(PDO $pdo, int $userId): ?int
+    {
+        $statement = $pdo->prepare(
+            "SELECT id FROM stores WHERE owner_user_id = ? AND status IN ('approved', 'suspended')"
+        );
+        $statement->execute([$userId]);
+        $id = $statement->fetchColumn();
+        return $id === false ? null : (int) $id;
     }
 
     private static function activeParticularCount(PDO $pdo, int $userId): int

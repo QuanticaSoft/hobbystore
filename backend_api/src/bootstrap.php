@@ -16,9 +16,11 @@ require_once __DIR__ . '/Controllers/FavoritesController.php';
 require_once __DIR__ . '/Controllers/CartController.php';
 require_once __DIR__ . '/Controllers/OrdersController.php';
 require_once __DIR__ . '/Controllers/MyProductsController.php';
+require_once __DIR__ . '/Controllers/MyStoreController.php';
+require_once __DIR__ . '/Controllers/AdminController.php';
 require_once __DIR__ . '/Controllers/MeController.php';
 
-const API_VERSION = '0.5.0';
+const API_VERSION = '0.6.0';
 
 $config = require dirname(__DIR__) . '/config.php';
 
