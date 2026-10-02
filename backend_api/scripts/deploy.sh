@@ -23,10 +23,10 @@ remote "test -f $APP_DIR/config.local.php" || {
 remote "mkdir -p $WEB_DIR"
 
 rsync -az --delete -e "ssh ${SSH_OPTS[*]}" \
-  --exclude config.local.php --exclude public/ --exclude scripts/ --exclude sql/ \
+  --exclude config.local.php --exclude public/ --exclude scripts/ --exclude sql/ --exclude seeds/ \
   "$BACKEND_DIR/" "$REMOTE_HOST:$APP_DIR/"
 
-rsync -az --delete -e "ssh ${SSH_OPTS[*]}" --exclude app_root.php \
+rsync -az --delete -e "ssh ${SSH_OPTS[*]}" --exclude app_root.php --exclude media/ \
   "$BACKEND_DIR/public/" "$REMOTE_HOST:$WEB_DIR/"
 
 remote \

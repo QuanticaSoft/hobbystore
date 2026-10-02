@@ -5,6 +5,9 @@ REPO_ROOT="$(git -C "$(dirname "${BASH_SOURCE[0]}")" rev-parse --show-toplevel)"
 BACKEND_DIR="$REPO_ROOT/backend_api"
 REMOTE_HOST="flamenco"
 REMOTE_DB="gyros"
+# Media pública fuera del directorio de la API: deploy.sh hace rsync --delete de public/.
+MEDIA_DIR_STAGING="/webs/quanticasoft/hobbystore/media-staging"
+MEDIA_DIR_PROD="/webs/quanticasoft/hobbystore/media"
 
 # Una sola conexión SSH reutilizada por todo el script: flamenco rechaza a
 # veces conexiones nuevas seguidas (timeouts intermitentes en el puerto 22).
