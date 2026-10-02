@@ -34,6 +34,17 @@
 | DELETE | `/v1/my/products/{id}` | sí | Baja lógica (`status = removed`) → `{product_id, status}` |
 | POST | `/v1/my/products/{id}/images` | sí | Multipart, campo `photo` (JPG, PNG o WEBP; hasta 8 MB) → 201 `{product}` · máximo 5 fotos (409) · 413 si es muy grande · 415 si no es imagen |
 | DELETE | `/v1/my/products/{id}/images/{imageId}` | sí | → `{product}` · 409 si es la única foto de una publicación activa |
+| GET | `/v1/my/store` | sí | `{store: my_store \| null}` |
+| POST | `/v1/my/store` | sí | Body `{name, description?, city, whatsapp_phone (+591XXXXXXXX), delivery_options: [pickup\|local\|national]}` → 201 `{store}` en `pending` · 409 si ya tiene una tienda |
+| PATCH | `/v1/my/store` | sí | Cualquier campo del alta → `{store}` (el slug no cambia) |
+| POST | `/v1/my/store/logo` | sí | Multipart `photo` → `{store}` (512 px; reemplaza el logo anterior) |
+| GET | `/v1/admin/stores?status=pending\|approved\|suspended` | admin | `{stores: [my_store + {owner_name, owner_phone, product_count, created_at}]}` |
+| PATCH | `/v1/admin/stores/{slug}` | admin | `{status?: approved\|suspended, is_featured?, review_note?}` → `{store}`. Aprobar pasa a la tienda todas las publicaciones de su dueño |
+| GET | `/v1/admin/banners` | admin | `{banners: [{id, title, image_url, active, sort}]}`, incluidos los inactivos |
+| POST | `/v1/admin/banners` | admin | Multipart `photo` + `title` → 201 `{banner}` (1600 px, al final del orden) |
+| PATCH | `/v1/admin/banners/{id}` | admin | `{title?, active?, sort?}` → `{banner}` |
+| DELETE | `/v1/admin/banners/{id}` | admin | → `{banner_id, deleted}` |
+| DELETE | `/v1/admin/products/{id}` | admin | Retira la publicación (`removed`) → `{product_id, status}` |
 
 **Formas comunes**
 - `product` (resumen): `{id, title, price_bob, condition: new|used, city, thumb_url, seller_name, store_slug}`
@@ -51,3 +62,6 @@
 - Número de WhatsApp del vendedor: el `whatsapp_phone` de la tienda o, si es particular, su celular verificado por OTP.
 - `my_product`: `{id, title, description, price_bob, condition, stock, status, city, category: {slug, name}, images: [{id, url, thumb_url}]}`.
 - **Publicar** = `POST` (queda pausada) → `POST .../images` por cada foto → `PATCH {status: "active"}`.
+- `my_store`: `{slug, name, description, city, whatsapp_phone, delivery_options, logo_url, status: pending|approved|suspended, is_featured, review_note}`.
+- **Admin:** `users.is_admin`, que se asigna solo en la BD. Cualquier otro usuario recibe 403.
+- `GET /v1/my/products` devuelve `active_limit: null` si el usuario publica como tienda (sin tope).
