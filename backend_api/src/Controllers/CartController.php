@@ -73,8 +73,10 @@ final class CartController
         $totalCents = 0;
         $itemCount = 0;
         foreach ($statement->fetchAll() as $row) {
-            $key = $row['store_slug'] !== null ? 'store:' . $row['store_slug'] : 'user:' . $row['seller_user_id'];
+            $key = self::groupKey($row['store_slug'], (int) $row['seller_user_id']);
             $groups[$key] ??= [
+                // Identifica al grupo al crear el pedido (POST /v1/orders).
+                'key' => $key,
                 'seller' => [
                     'type' => $row['store_slug'] !== null ? 'store' : 'user',
                     'name' => $row['store_name'] ?? $row['seller_name'] ?? 'Vendedor',
@@ -107,5 +109,11 @@ final class CartController
             'item_count' => $itemCount,
             'total_bob' => $totalCents / 100,
         ];
+    }
+
+    /** Un pedido por vendedor: la tienda, o el particular si no hay tienda. */
+    public static function groupKey(?string $storeSlug, int $sellerUserId): string
+    {
+        return $storeSlug !== null ? "store:$storeSlug" : "user:$sellerUserId";
     }
 }
