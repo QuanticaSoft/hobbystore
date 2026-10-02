@@ -2,6 +2,10 @@
 
 Formato: fecha, decisión y por qué. Las decisiones nuevas van arriba.
 
+## 2026-10-01: Prod se publica sin catálogo
+La `v0.2.0` sale a prod con el Home vacío: sin tiendas, productos ni banners. Las primeras tiendas reales entran con la Fase 6 (alta y aprobación de tiendas).
+**Por qué:** decisión del usuario. Prod nunca lleva datos de demo, y cargar tiendas reales a mano antes de tener el flujo de alta sería trabajo descartable.
+
 ## 2026-10-01: Catálogo público, sin sesión
 `/v1/home`, `/v1/categories`, `/v1/products` y `/v1/stores` no piden token.
 **Por qué:** es información pública de vitrina. Así se podrá usar desde una web o un enlace compartido sin rehacer la API. Lo que es del usuario (favoritos, carrito, pedidos) sí pedirá sesión.

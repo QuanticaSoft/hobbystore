@@ -1,22 +1,22 @@
 # Hobby Store: Progreso
 
-Última actualización: 2026-10-01 · Fase actual: **2: Catálogo + Home** (en revisión)
+Última actualización: 2026-10-01 · Fase actual: **2: Catálogo + Home** (despliegue a staging)
 
 ## Dónde quedamos
-- **Fase 2 programada y probada en local** (rama `feature/f2-catalogo-home`, PR hacia `develop`).
+- **Fase 2 con merge en `develop`** (PR #4).
 - **Después del merge:**
   1. En flamenco: agregar `media_base_url` a los `config.local.php` y crear `media-staging/` y `media/`.
   2. `migrate.sh staging` (002) → `seed.sh staging` → `deploy.sh staging`.
   3. El usuario prueba en el iPhone con `ENV=staging`.
   4. Release `v0.2.0`: en prod solo la migración y el deploy, **sin demo**.
-- **Pendiente de decidir:** qué mostrar en prod mientras no haya tiendas reales (¿cargar las primeras tiendas reales antes del release?).
+- **Decidido:** prod sale con el catálogo vacío; se llena con la Fase 6 (ver DECISIONS).
 
 ## Estado por fase
 | Fase | Estado | Notas |
 |---|---|---|
 | 0 Fundaciones | ✅ | v0.0.1 en staging y prod, `public` verificado, repo en GitHub |
 | 1 Login + esqueleto app | ✅ | v0.1.0: login OTP, shell con 5 tabs, perfil; probado en iPhone |
-| 2 Catálogo + Home | 🔄 | PR en revisión; falta staging, la prueba en el dispositivo y el release v0.2.0 |
+| 2 Catálogo + Home | 🔄 | En `develop`; falta staging, la prueba en el dispositivo y el release v0.2.0 |
 | 3 Favoritos + Carrito | ⏳ | |
 | 4 Pedido → WhatsApp | ⏳ | |
 | 5 Vender (particulares) | ⏳ | |
