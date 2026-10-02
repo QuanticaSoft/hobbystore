@@ -23,6 +23,7 @@ class UserSession extends ChangeNotifier {
 
   Future<void> load() async {
     _isLoading = true;
+    _isExpired = false;
     _errorMessage = null;
     notifyListeners();
 
@@ -36,6 +37,15 @@ class UserSession extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  /// Olvida al usuario al cerrar sesión: la sesión vive a nivel de app y el
+  /// próximo login no debe ver los datos del anterior.
+  void clear() {
+    _user = null;
+    _errorMessage = null;
+    _isExpired = false;
+    notifyListeners();
   }
 
   /// Lanza [ApiException] para que el formulario muestre el error en su lugar.

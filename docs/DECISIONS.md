@@ -2,6 +2,13 @@
 
 Formato: fecha, decisión y por qué. Las decisiones nuevas van arriba.
 
+## 2026-10-01: Estado de sesión por encima de MaterialApp
+`ApiClient`, `UserSession` y `CatalogRepository` se proveen por encima de `MaterialApp`, con un solo `ApiClient` para toda la app. Al entrar, `homeBuilder` fija `api.currentPhone`; al cerrar sesión se limpia todo **después** de navegar al login.
+**Por qué:** las pantallas que se abren con `Navigator.push` son rutas hermanas del Home, no hijas. Con los providers dentro del Home no los encontraban (pantalla roja en el iPhone).
+
+## 2026-10-01: Sin botón "Salir de la app"
+No se agrega. En iOS cerrar la app desde código va contra las guías de Apple y puede causar el rechazo en la revisión; en Android tampoco es la norma. La sesión se guarda en el llavero (Keychain/Keystore): al reabrir la app se entra directo, sin código. "Cerrar sesión" sirve para cambiar de cuenta, pide confirmación y avisa que hará falta un código SMS nuevo.
+
 ## 2026-10-01: Prod se publica sin catálogo
 La `v0.2.0` sale a prod con el Home vacío: sin tiendas, productos ni banners. Las primeras tiendas reales entran con la Fase 6 (alta y aprobación de tiendas).
 **Por qué:** decisión del usuario. Prod nunca lleva datos de demo, y cargar tiendas reales a mano antes de tener el flujo de alta sería trabajo descartable.

@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../../core/api/api_client.dart';
 import '../../core/widgets/error_retry.dart';
+import '../session/log_out.dart';
 import '../session/user.dart';
 import '../session/user_session.dart';
 
@@ -126,7 +127,7 @@ class _ProfileFormState extends State<_ProfileForm> {
           ),
           const SizedBox(height: 32),
           OutlinedButton.icon(
-            onPressed: () => widget.auth.logout(context),
+            onPressed: () => confirmLogOut(context, widget.auth),
             icon: const Icon(Icons.logout),
             label: const Text('Cerrar sesión'),
           ),

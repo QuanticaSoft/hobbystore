@@ -27,15 +27,18 @@ class ApiClient {
   final SessionStore sessionStore;
 
   /// Solo con el OTP mock: el servidor dev no puede validar tokens del mock y
-  /// confía en este teléfono (header `X-Dev-Phone`).
-  final String? devPhone;
+  /// confía en el teléfono del usuario que entró (header `X-Dev-Phone`).
+  final bool sendDevPhone;
+
+  /// Teléfono del usuario con sesión; la app lo fija al entrar.
+  String? currentPhone;
 
   final http.Client _client;
 
   ApiClient({
     required this.baseUrl,
     required this.sessionStore,
-    this.devPhone,
+    this.sendDevPhone = false,
     http.Client? client,
   }) : _client = client ?? http.Client();
 
@@ -103,7 +106,7 @@ class ApiClient {
       'Accept': 'application/json',
       'Content-Type': 'application/json',
       'X-Session-Token': ?token,
-      'X-Dev-Phone': ?devPhone,
+      if (sendDevPhone) 'X-Dev-Phone': ?currentPhone,
     };
   }
 }

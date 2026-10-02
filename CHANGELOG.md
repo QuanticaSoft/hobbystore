@@ -9,6 +9,10 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y 
 - Demo: `scripts/seed.sh dev|staging` con 3 tiendas, 20 productos y 4 banners.
 - App: Home con buscador, carrusel de banners, tiendas destacadas y novedades.
 - App: tab Categorías, listado con scroll infinito, búsqueda, detalle de producto (galería, vendedor, entrega) y página de tienda.
+- App: "Cerrar sesión" pide confirmación y explica que para salir basta con cerrar la app.
+
+### Fixed
+- App: pantalla roja (`ProviderNotFoundException`) al abrir un producto, una tienda o un listado. Los providers estaban dentro de la ruta del Home y las pantallas nuevas son rutas hermanas; ahora viven por encima de `MaterialApp`.
 
 ## [0.1.0] - 2026-09-30
 Fase 1: login y esqueleto de la app.

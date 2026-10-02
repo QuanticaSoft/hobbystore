@@ -15,10 +15,10 @@ void main() {
     HobbyStoreApp(
       otpService: otpService,
       sessionStore: sessionStore,
-      apiClientBuilder: (phone) => ApiClient(
+      api: ApiClient(
         baseUrl: AppConfig.apiBaseUrl,
         sessionStore: sessionStore,
-        devPhone: AppConfig.useMockOtp ? phone : null,
+        sendDevPhone: AppConfig.useMockOtp,
       ),
     ),
   );
