@@ -12,11 +12,11 @@ final class CatalogController
     private const HOME_LATEST_COUNT = 10;
     private const MAX_QUERY_LENGTH = 80;
 
-    private const VISIBLE_PRODUCTS = "p.status = 'active' AND (p.store_id IS NULL OR s.status = 'approved')";
+    public const VISIBLE_PRODUCTS = "p.status = 'active' AND (p.store_id IS NULL OR s.status = 'approved')";
 
     // Datos de una tarjeta de producto: primera imagen y nombre del vendedor.
-    private const PRODUCT_SUMMARY_SELECT = "
-        SELECT p.id, p.title, p.price_bob, p.condition, p.city, p.created_at,
+    public const PRODUCT_SUMMARY_SELECT = "
+        SELECT p.id, p.title, p.price_bob, p.condition, p.city, p.created_at, p.stock, p.seller_user_id,
                s.slug AS store_slug, s.name AS store_name, u.display_name AS seller_name,
                (SELECT pi.thumb_path FROM product_images pi
                  WHERE pi.product_id = p.id ORDER BY pi.sort LIMIT 1) AS thumb_path
@@ -196,6 +196,25 @@ final class CatalogController
         ]]);
     }
 
+    /** Devuelve el producto (id, vendedor, stock) o responde 404. */
+    public static function requireVisibleProduct(PDO $pdo, string $productId): array
+    {
+        if (!ctype_digit($productId)) {
+            Response::error('Producto no encontrado.', 404);
+        }
+        $statement = $pdo->prepare(
+            'SELECT p.id, p.seller_user_id, p.stock FROM products p
+             LEFT JOIN stores s ON s.id = p.store_id
+             WHERE p.id = ? AND ' . CatalogController::VISIBLE_PRODUCTS
+        );
+        $statement->execute([$productId]);
+        $product = $statement->fetch();
+        if ($product === false) {
+            Response::error('Producto no encontrado.', 404);
+        }
+        return $product;
+    }
+
     private static function presentStoreSummary(array $store, array $config): array
     {
         return [
@@ -206,7 +225,7 @@ final class CatalogController
         ];
     }
 
-    private static function presentProductSummary(array $product, array $config): array
+    public static function presentProductSummary(array $product, array $config): array
     {
         return [
             'id' => (int) $product['id'],
