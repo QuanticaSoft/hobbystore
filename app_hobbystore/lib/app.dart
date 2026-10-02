@@ -4,7 +4,9 @@ import 'package:provider/provider.dart';
 
 import 'core/api/api_client.dart';
 import 'core/theme/app_theme.dart';
+import 'features/cart/cart_store.dart';
 import 'features/catalog/catalog_repository.dart';
+import 'features/favorites/favorites_store.dart';
 import 'features/session/user_session.dart';
 import 'features/shell/home_shell.dart';
 
@@ -22,15 +24,8 @@ class HobbyStoreApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Los providers van por encima de MaterialApp para que las pantallas que
-    // se apilan con Navigator.push (producto, tienda, listados) los vean:
-    // esas rutas son hermanas del Home, no hijas.
-    return MultiProvider(
-      providers: [
-        Provider.value(value: api),
-        ChangeNotifierProvider(create: (_) => UserSession(api)),
-        Provider(create: (_) => CatalogRepository(api)),
-      ],
+    return AppProviders(
+      api: api,
       child: MaterialApp(
         title: 'Hobby Store',
         theme: AppTheme.light,
@@ -46,6 +41,31 @@ class HobbyStoreApp extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// Estado compartido de la app, por encima de [MaterialApp]: las pantallas que
+/// se apilan con Navigator.push (producto, tienda, listados) son rutas hermanas
+/// del Home, no hijas, y solo así ven estos providers. Los tests lo usan para
+/// montar exactamente el mismo árbol que la app.
+class AppProviders extends StatelessWidget {
+  final ApiClient api;
+  final Widget child;
+
+  const AppProviders({super.key, required this.api, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return MultiProvider(
+      providers: [
+        Provider.value(value: api),
+        ChangeNotifierProvider(create: (_) => UserSession(api)),
+        Provider(create: (_) => CatalogRepository(api)),
+        ChangeNotifierProvider(create: (_) => FavoritesStore(api)),
+        ChangeNotifierProvider(create: (_) => CartStore(api)),
+      ],
+      child: child,
     );
   }
 }

@@ -56,3 +56,29 @@ $router->get('/v1/products/{id}', static function (string $id) use ($config): ne
 $router->get('/v1/stores/{slug}', static function (string $slug) use ($config): never {
     CatalogController::store(Db::connect($config['db']), $config, $slug);
 });
+
+// Favoritos y carrito: requieren sesión.
+$withUser = static function (callable $handler) use ($config): callable {
+    return static function (string ...$params) use ($handler, $config): never {
+        $pdo = Db::connect($config['db']);
+        $handler($pdo, Users::idForPhone($pdo, Auth::requirePhone($pdo, $config)), ...$params);
+    };
+};
+
+$router->get('/v1/favorites', $withUser(static fn(PDO $pdo, int $userId) =>
+    FavoritesController::index($pdo, $config, $userId)));
+
+$router->put('/v1/favorites/{id}', $withUser(static fn(PDO $pdo, int $userId, string $id) =>
+    FavoritesController::add($pdo, $userId, $id)));
+
+$router->delete('/v1/favorites/{id}', $withUser(static fn(PDO $pdo, int $userId, string $id) =>
+    FavoritesController::remove($pdo, $userId, $id)));
+
+$router->get('/v1/cart', $withUser(static fn(PDO $pdo, int $userId) =>
+    CartController::show($pdo, $config, $userId)));
+
+$router->put('/v1/cart/{id}', $withUser(static fn(PDO $pdo, int $userId, string $id) =>
+    CartController::setQuantity($pdo, $config, $userId, $id)));
+
+$router->delete('/v1/cart/{id}', $withUser(static fn(PDO $pdo, int $userId, string $id) =>
+    CartController::remove($pdo, $config, $userId, $id)));

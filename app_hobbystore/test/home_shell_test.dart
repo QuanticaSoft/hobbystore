@@ -1,4 +1,4 @@
-import 'package:app_hobbystore/features/catalog/catalog_repository.dart';
+import 'package:app_hobbystore/app.dart';
 import 'package:app_hobbystore/features/session/user_session.dart';
 import 'package:app_hobbystore/features/shell/home_shell.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +15,6 @@ Future<UserSession> pumpShell(
 ) async {
   usePhoneScreen(tester);
   final api = fakeApi(handler);
-  final session = UserSession(api);
   final auth = OtpAuth(
     otpService: MockOtpService(),
     sessionStore: InMemorySessionStore(testToken),
@@ -23,13 +22,14 @@ Future<UserSession> pumpShell(
   );
 
   await tester.pumpWidget(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider.value(value: session),
-        Provider(create: (_) => CatalogRepository(api)),
-      ],
+    AppProviders(
+      api: api,
       child: MaterialApp(home: HomeShell(auth: auth)),
     ),
+  );
+  final session = Provider.of<UserSession>(
+    tester.element(find.byType(HomeShell)),
+    listen: false,
   );
   await session.load();
   await settle(tester);
