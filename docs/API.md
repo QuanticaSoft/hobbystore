@@ -19,9 +19,19 @@
 | GET | `/v1/products` | no | Query opcional: `category` (slug), `store` (slug), `q` (texto, máximo 80 caracteres), `page` (desde 1). Responde `{items: [product], page, has_more}`, 20 por página, de más nuevo a más viejo |
 | GET | `/v1/products/{id}` | no | `{product: {id, title, description, price_bob, condition, stock, city, created_at, category: {slug, name}, images: [{url, thumb_url}], seller: {type: store\|user, name, city, store_slug, logo_url, delivery_options}}}` · 404 si no existe o no está visible |
 | GET | `/v1/stores/{slug}` | no | `{store: {slug, name, city, logo_url, description, delivery_options, product_count}}` · 404 si no existe o no está aprobada |
+| GET | `/v1/favorites` | sí | `{items: [product]}`: solo productos visibles, del favorito más reciente al más antiguo |
+| PUT | `/v1/favorites/{id}` | sí | Agrega (idempotente) → `{product_id, favorite: true}` · 404 si el producto no está visible |
+| DELETE | `/v1/favorites/{id}` | sí | Quita (idempotente) → `{product_id, favorite: false}` |
+| GET | `/v1/cart` | sí | `{cart}` (ver abajo) |
+| PUT | `/v1/cart/{id}` | sí | Body `{qty}` (1 a 99): fija la cantidad → `{cart}` · 400 si la cantidad es inválida o el producto es propio · 409 si supera el stock · 404 si no está visible |
+| DELETE | `/v1/cart/{id}` | sí | Quita la línea → `{cart}` |
 
 **Formas comunes**
 - `product` (resumen): `{id, title, price_bob, condition: new|used, city, thumb_url, seller_name, store_slug}`
 - `store` (resumen): `{slug, name, city, logo_url}`
 - `delivery_options`: subconjunto de `pickup` (retiro en tienda), `local` (envío en la ciudad) y `national` (encomienda).
 - **Visibilidad:** solo se listan productos `active` de particulares o de tiendas `approved`.
+- `cart`: `{groups: [{seller: {type, name, store_slug, city}, items: [product + {qty, stock, line_total_bob}], subtotal_bob}], item_count, total_bob}`.
+  - Un grupo por vendedor (tienda o particular): cada uno será un pedido por WhatsApp.
+  - Los montos se suman en centavos.
+  - Los productos que dejaron de estar visibles no aparecen ni suman.

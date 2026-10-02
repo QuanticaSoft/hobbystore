@@ -3,6 +3,12 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y [SemVer](https://semver.org/lang/es/).
 
 ## [Unreleased]
+### Added
+- BD: migración `003_favorites_cart`.
+- API: `/v1/favorites` (GET, PUT, DELETE) y `/v1/cart` (GET, PUT con cantidad, DELETE), con sesión. El carrito se agrupa por vendedor y valida stock, cantidad y producto propio.
+- App: ♥ en las tarjetas y en el detalle (optimista, vuelve atrás si falla) y tab Favoritos.
+- App: "Añadir al carrito" en el detalle (respeta el stock), tab Carrito agrupada por vendedor con + / −, subtotales, y contador en la barra de navegación.
+- App: `AppProviders` comparte el árbol de providers entre la app y los tests.
 
 ## [0.2.0] - 2026-10-01
 Fase 2: catálogo y Home.
