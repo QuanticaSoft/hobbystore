@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:otp_auth/otp_auth.dart';
 import 'package:provider/provider.dart';
 
-import '../../core/widgets/coming_soon.dart';
+import '../cart/cart_store.dart';
+import '../cart/cart_tab.dart';
 import '../catalog/categories_tab.dart';
+import '../favorites/favorites_store.dart';
+import '../favorites/favorites_tab.dart';
 import '../home/home_tab.dart';
 import '../profile/profile_tab.dart';
 import '../session/log_out.dart';
@@ -23,14 +26,20 @@ class _HomeShellState extends State<HomeShell> {
 
   int _selectedIndex = 0;
 
-  // La sesión vive a nivel de app; cada vez que alguien entra se carga su
-  // perfil. Tras el primer frame: load() notifica de inmediato y no se puede
+  // La sesión vive a nivel de app; cada vez que alguien entra se cargan su
+  // perfil, favoritos y carrito. Tras el primer frame: load() notifica de inmediato y no se puede
   // notificar a otros widgets mientras este se está construyendo.
   @override
   void initState() {
     super.initState();
     final session = context.read<UserSession>();
-    WidgetsBinding.instance.addPostFrameCallback((_) => session.load());
+    final favorites = context.read<FavoritesStore>();
+    final cart = context.read<CartStore>();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      session.load();
+      favorites.load();
+      cart.load();
+    });
   }
 
   void _selectTab(int index) => setState(() => _selectedIndex = index);
@@ -46,17 +55,8 @@ class _HomeShellState extends State<HomeShell> {
         children: [
           HomeTab(onCompleteProfile: () => _selectTab(profileTabIndex)),
           const CategoriesTab(),
-          const _PlaceholderTab(
-            title: 'Favoritos',
-            icon: Icons.favorite_outline,
-            message: 'Los productos que marques con ♥ aparecerán aquí.',
-          ),
-          const _PlaceholderTab(
-            title: 'Carrito',
-            icon: Icons.shopping_cart_outlined,
-            message:
-                'Tu carrito, agrupado por vendedor, para pedir por WhatsApp.',
-          ),
+          const FavoritesTab(),
+          const CartTab(),
           ProfileTab(auth: widget.auth),
         ],
       ),
@@ -80,8 +80,8 @@ class _HomeShellState extends State<HomeShell> {
             label: 'Favoritos',
           ),
           NavigationDestination(
-            icon: Icon(Icons.shopping_cart_outlined),
-            selectedIcon: Icon(Icons.shopping_cart),
+            icon: _CartIcon(selected: false),
+            selectedIcon: _CartIcon(selected: true),
             label: 'Carrito',
           ),
           NavigationDestination(
@@ -95,22 +95,23 @@ class _HomeShellState extends State<HomeShell> {
   }
 }
 
-class _PlaceholderTab extends StatelessWidget {
-  final String title;
-  final IconData icon;
-  final String message;
+/// Ícono del carrito con la cantidad de productos.
+class _CartIcon extends StatelessWidget {
+  final bool selected;
 
-  const _PlaceholderTab({
-    required this.title,
-    required this.icon,
-    required this.message,
-  });
+  const _CartIcon({required this.selected});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(title)),
-      body: ComingSoon(icon: icon, message: message),
+    final count = context.select<CartStore, int>(
+      (store) => store.cart.itemCount,
+    );
+    return Badge.count(
+      count: count,
+      isLabelVisible: count > 0,
+      child: Icon(
+        selected ? Icons.shopping_cart : Icons.shopping_cart_outlined,
+      ),
     );
   }
 }

@@ -8,10 +8,13 @@ require_once __DIR__ . '/Router.php';
 require_once __DIR__ . '/Validation.php';
 require_once __DIR__ . '/Auth.php';
 require_once __DIR__ . '/Media.php';
+require_once __DIR__ . '/Users.php';
 require_once __DIR__ . '/Controllers/CatalogController.php';
+require_once __DIR__ . '/Controllers/FavoritesController.php';
+require_once __DIR__ . '/Controllers/CartController.php';
 require_once __DIR__ . '/Controllers/MeController.php';
 
-const API_VERSION = '0.2.0';
+const API_VERSION = '0.3.0';
 
 $config = require dirname(__DIR__) . '/config.php';
 

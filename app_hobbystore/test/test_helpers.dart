@@ -49,12 +49,20 @@ Future<http.Response> Function(http.Request) routes(
       return jsonResponse(onPatch(request));
     }
     final path = request.url.path.replaceFirst('/v1', '');
-    final body = responses[path];
+    final body = {..._emptyUserLists, ...responses}[path];
     return body == null
         ? jsonResponse({'status': 'error', 'message': 'No encontrado.'}, 404)
         : jsonResponse(body);
   };
 }
+
+/// La shell carga favoritos y carrito al entrar; por defecto, vacíos.
+const _emptyUserLists = {
+  '/favorites': {'items': []},
+  '/cart': {
+    'cart': {'groups': [], 'item_count': 0, 'total_bob': 0},
+  },
+};
 
 Map<String, dynamic> productJson(
   int id, {

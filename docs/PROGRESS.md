@@ -1,13 +1,14 @@
 # Hobby Store: Progreso
 
-Última actualización: 2026-10-01 · Fase actual: **3: Favoritos + Carrito** (por iniciar)
+Última actualización: 2026-10-02 · Fase actual: **3: Favoritos + Carrito** (en revisión)
 
 ## Dónde quedamos
 - **Fase 2 cerrada: release `v0.2.0`** (2026-10-01).
   - Probada por el usuario en su teléfono con `ENV=staging`.
   - En el camino se corrigió la pantalla roja al navegar (PR #5).
   - Prod sale **sin catálogo**: Home vacío hasta la Fase 6.
-- **Siguiente paso:** Fase 3 (favoritos + carrito por vendedor) en `feature/f3-favoritos-carrito`.
+- **Fase 3 programada y probada en local** (rama `feature/f3-favoritos-carrito`, PR hacia `develop`).
+  - Después del merge: `migrate.sh staging` (003) → `deploy.sh staging` → el usuario prueba en el teléfono → release `v0.3.0`.
 - **Verificación pendiente del usuario:** cerrar la app con el gesto y reabrirla debe entrar sin pedir código.
 
 ## Estado por fase
@@ -16,7 +17,7 @@
 | 0 Fundaciones | ✅ | v0.0.1 en staging y prod, `public` verificado, repo en GitHub |
 | 1 Login + esqueleto app | ✅ | v0.1.0: login OTP, shell con 5 tabs, perfil; probado en iPhone |
 | 2 Catálogo + Home | ✅ | v0.2.0: Home, categorías, búsqueda, detalle y tienda; demo en staging |
-| 3 Favoritos + Carrito | ⏳ | |
+| 3 Favoritos + Carrito | 🔄 | PR en revisión; falta staging, la prueba en el dispositivo y el release v0.3.0 |
 | 4 Pedido → WhatsApp | ⏳ | |
 | 5 Vender (particulares) | ⏳ | |
 | 6 Tiendas + Admin | ⏳ | |
@@ -41,13 +42,23 @@
 - `scripts/deploy.sh` y `scripts/backup.sh` con validación de rama, tag y entorno
 
 ### 🔄 En proceso
-- (nada)
+- **Fase 3** (`feature/f3-favoritos-carrito`):
+  - Migración 003 (`favorites`, `cart_items`). API con sesión: `/v1/favorites` y `/v1/cart`, agrupado por vendedor, con validación de stock y de producto propio.
+  - App: ♥ (tarjeta y detalle) + tab Favoritos; "Añadir al carrito" + tab Carrito (por vendedor, + / −, subtotales) + contador en la barra.
+  - El botón "Pedir a <vendedor>" ya aparece, inactivo hasta la Fase 4.
 
 ### ⏳ Pendiente
 - Fases 2 a 7: detalle de cada fase en `docs/PLAN.md`.
 
 ### 🧊 Postergado (post-MVP)
 - Pago QR o pasarela, reseñas y rating, push notifications, chat interno, búsqueda full-text, versión web, envíos con tarifa.
+
+## Checklist Fase 3
+- [x] `flutter analyze` sin issues · `flutter test` 27/27 (incluye backend falso con estado para favoritos y carrito)
+- [x] API dev: 401 sin sesión, favoritos idempotentes, 404, agrupación por vendedor, totales, stock (409), cantidad 1 a 99, producto propio (400)
+- [x] Builds: simulador iOS ✅ · APK debug ✅
+- [ ] staging: migración 003 + deploy
+- [ ] Dispositivo: ♥ en tarjeta y detalle, tab Favoritos, añadir al carrito, + / −, contador, cerrar sesión vacía todo
 
 ## Checklist Fase 2 (cerrada)
 - [x] `flutter analyze` sin issues · `flutter test` 22/22 (incluye un test de la app completa: navegación y cierre de sesión)
