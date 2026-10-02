@@ -1,14 +1,15 @@
 # Hobby Store: Progreso
 
-Última actualización: 2026-10-02 · Fase actual: **5: Vender (particulares)** (en revisión)
+Última actualización: 2026-10-02 · Fase actual: **5: Vender (particulares)** (en staging, falta probar en dispositivo)
 
 ## Dónde quedamos
 - **Fase 4 cerrada: release `v0.4.0`** (2026-10-02).
   - El usuario la probó en su teléfono con `ENV=staging`: pedido a Garage RC → WhatsApp real con el mensaje, Mis compras, escribir al vendedor y cancelar.
   - **Pendiente para la Fase 6:** probar "Pedidos recibidos" en el dispositivo, con una tienda de dueño real.
   - Staging: el WhatsApp de Garage RC apunta a un número real de prueba (solo en la BD). Un `seed.sh staging` lo revierte: avisar antes.
-- **Fase 5 programada y probada en local** (rama `feature/f5-vender`, PR hacia `develop`).
-  - Después del merge: agregar `media_dir` a los `config.local.php` de flamenco → `migrate.sh staging` (005) → `deploy.sh staging` → el usuario prueba en el teléfono (fotos reales y cámara) → release `v0.5.0`.
+- **Fase 5 en staging** (PR #11 con merge): migración 005, API 0.5.0, `media_dir` configurado en staging y prod.
+  - Verificado con una sonda temporal (ya borrada): PHP-FPM puede escribir en la media pese a SELinux, y `.user.ini` aplica 8M/10M.
+  - Siguiente: el usuario prueba en el teléfono → release `v0.5.0`.
 
 ## Estado por fase
 | Fase | Estado | Notas |
@@ -18,7 +19,7 @@
 | 2 Catálogo + Home | ✅ | v0.2.0: Home, categorías, búsqueda, detalle y tienda; demo en staging |
 | 3 Favoritos + Carrito | ✅ | v0.3.0: ♥ + tab Favoritos, carrito por vendedor con + / −, contador |
 | 4 Pedido → WhatsApp | ✅ | v0.4.0: pedido por vendedor → WhatsApp, Mis compras / Pedidos recibidos |
-| 5 Vender (particulares) | 🔄 | PR en revisión; falta staging, la prueba en el dispositivo y el release v0.5.0 |
+| 5 Vender (particulares) | 🔄 | En staging; falta la prueba en el dispositivo y el release v0.5.0 |
 | 6 Tiendas + Admin | ⏳ | |
 | 7 Publicación en tiendas | ⏳ | |
 
@@ -47,7 +48,7 @@
 - `scripts/deploy.sh` y `scripts/backup.sh` con validación de rama, tag y entorno
 
 ### 🔄 En proceso
-- **Fase 5** (`feature/f5-vender`):
+- **Fase 5** (PR #11 con merge, en staging):
   - API `/v1/my/products` + fotos (validación, EXIF, miniatura, sin GPS), límite de 5 activas, baja lógica.
   - App: "Vender" (Inicio) y "Mis publicaciones" (Perfil); formulario con fotos de galería o cámara, publicar = crear pausada → subir → activar, con reintento sin duplicar.
 
@@ -62,7 +63,7 @@
 - [x] API dev: crear, validaciones, foto inválida (415), 6.ª foto (409), activar sin foto o sin stock (409), límite 5 (409) y liberar cupo al vender, última foto de una activa (409), borrado del archivo, otro usuario (404), fotos sin EXIF ni GPS
 - [x] Subida real desde el `ApiClient` de la app contra la API dev (multipart)
 - [x] Builds: simulador iOS ✅ · APK debug ✅
-- [ ] staging: `media_dir` + migración 005 + deploy
+- [x] staging: `media_dir` + migración 005 + deploy; PHP-FPM escribe en la media; `.user.ini` 403 y aplicado
 - [ ] Dispositivo: publicar con fotos de galería y de cámara (orientación correcta), editar, pausar, vender, eliminar; verla en el catálogo
 
 ## Checklist Fase 4 (cerrada)
