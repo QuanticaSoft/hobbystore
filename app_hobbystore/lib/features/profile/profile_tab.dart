@@ -6,6 +6,7 @@ import '../../core/api/api_client.dart';
 import '../../core/widgets/error_retry.dart';
 import '../orders/order_models.dart';
 import '../orders/orders_screen.dart';
+import '../sell/my_products_screen.dart';
 import '../session/log_out.dart';
 import '../session/user.dart';
 import '../session/user_session.dart';
@@ -136,6 +137,16 @@ class _ProfileFormState extends State<_ProfileForm> {
             margin: EdgeInsets.zero,
             child: Column(
               children: [
+                ListTile(
+                  leading: const Icon(Icons.sell_outlined),
+                  title: const Text('Mis publicaciones'),
+                  subtitle: const Text('Vende tus modelos y accesorios'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const MyProductsScreen()),
+                  ),
+                ),
+                const Divider(height: 1),
                 ListTile(
                   leading: const Icon(Icons.shopping_bag_outlined),
                   title: const Text('Mis compras'),

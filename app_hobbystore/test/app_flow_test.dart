@@ -2,6 +2,7 @@ import 'package:app_hobbystore/app.dart';
 import 'package:app_hobbystore/features/catalog/product_detail_screen.dart';
 import 'package:app_hobbystore/features/home/home_tab.dart';
 import 'package:app_hobbystore/features/session/user_session.dart';
+import 'package:app_hobbystore/features/profile/profile_tab.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
@@ -133,7 +134,7 @@ void main() {
 
     await tester.tap(find.widgetWithText(NavigationDestination, 'Perfil'));
     await tester.pump();
-    await tester.ensureVisible(find.text('Cerrar sesión'));
+    await scrollTo(tester, find.text('Cerrar sesión'), ProfileTab);
     await tester.tap(find.text('Cerrar sesión'));
     await settle(tester);
 

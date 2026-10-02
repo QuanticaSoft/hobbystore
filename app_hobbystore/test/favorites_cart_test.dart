@@ -1,5 +1,6 @@
 import 'package:app_hobbystore/features/cart/cart_store.dart';
 import 'package:app_hobbystore/features/favorites/favorites_store.dart';
+import 'package:app_hobbystore/features/profile/profile_tab.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
@@ -122,7 +123,7 @@ void main() {
     expect(cartBadge('1'), findsOneWidget);
 
     await goToTab(tester, 'Perfil');
-    await tester.ensureVisible(find.text('Cerrar sesión'));
+    await scrollTo(tester, find.text('Cerrar sesión'), ProfileTab);
     await tester.tap(find.text('Cerrar sesión'));
     await tester.pumpAndSettle();
     await tester.tap(find.widgetWithText(FilledButton, 'Cerrar sesión'));

@@ -11,6 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
   http: ^1.6.0
+  image_picker: ^1.2.3
   otp_auth:
     path: ../packages/otp_auth
   provider: ^6.1.5+1
