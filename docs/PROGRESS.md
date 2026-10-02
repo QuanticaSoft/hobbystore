@@ -1,14 +1,14 @@
 # Hobby Store: Progreso
 
-Última actualización: 2026-10-02 · Fase actual: **3: Favoritos + Carrito** (en revisión)
+Última actualización: 2026-10-02 · Fase actual: **3: Favoritos + Carrito** (en staging, falta probar en dispositivo)
 
 ## Dónde quedamos
 - **Fase 2 cerrada: release `v0.2.0`** (2026-10-01).
   - Probada por el usuario en su teléfono con `ENV=staging`.
   - En el camino se corrigió la pantalla roja al navegar (PR #5).
   - Prod sale **sin catálogo**: Home vacío hasta la Fase 6.
-- **Fase 3 programada y probada en local** (rama `feature/f3-favoritos-carrito`, PR hacia `develop`).
-  - Después del merge: `migrate.sh staging` (003) → `deploy.sh staging` → el usuario prueba en el teléfono → release `v0.3.0`.
+- **Fase 3 en staging** (PR #7 con merge): migración 003 aplicada, API 0.3.0. Endpoints protegidos (401 sin sesión y con token inválido).
+  - Siguiente: el usuario prueba en el teléfono con `ENV=staging` → release `v0.3.0`.
 - **Verificación pendiente del usuario:** cerrar la app con el gesto y reabrirla debe entrar sin pedir código.
 
 ## Estado por fase
@@ -17,7 +17,7 @@
 | 0 Fundaciones | ✅ | v0.0.1 en staging y prod, `public` verificado, repo en GitHub |
 | 1 Login + esqueleto app | ✅ | v0.1.0: login OTP, shell con 5 tabs, perfil; probado en iPhone |
 | 2 Catálogo + Home | ✅ | v0.2.0: Home, categorías, búsqueda, detalle y tienda; demo en staging |
-| 3 Favoritos + Carrito | 🔄 | PR en revisión; falta staging, la prueba en el dispositivo y el release v0.3.0 |
+| 3 Favoritos + Carrito | 🔄 | En staging; falta la prueba en el dispositivo y el release v0.3.0 |
 | 4 Pedido → WhatsApp | ⏳ | |
 | 5 Vender (particulares) | ⏳ | |
 | 6 Tiendas + Admin | ⏳ | |
@@ -42,7 +42,7 @@
 - `scripts/deploy.sh` y `scripts/backup.sh` con validación de rama, tag y entorno
 
 ### 🔄 En proceso
-- **Fase 3** (`feature/f3-favoritos-carrito`):
+- **Fase 3** (PR #7 con merge, en staging):
   - Migración 003 (`favorites`, `cart_items`). API con sesión: `/v1/favorites` y `/v1/cart`, agrupado por vendedor, con validación de stock y de producto propio.
   - App: ♥ (tarjeta y detalle) + tab Favoritos; "Añadir al carrito" + tab Carrito (por vendedor, + / −, subtotales) + contador en la barra.
   - El botón "Pedir a <vendedor>" ya aparece, inactivo hasta la Fase 4.
@@ -57,7 +57,7 @@
 - [x] `flutter analyze` sin issues · `flutter test` 27/27 (incluye backend falso con estado para favoritos y carrito)
 - [x] API dev: 401 sin sesión, favoritos idempotentes, 404, agrupación por vendedor, totales, stock (409), cantidad 1 a 99, producto propio (400)
 - [x] Builds: simulador iOS ✅ · APK debug ✅
-- [ ] staging: migración 003 + deploy
+- [x] staging: migración 003 + deploy (API 0.3.0)
 - [ ] Dispositivo: ♥ en tarjeta y detalle, tab Favoritos, añadir al carrito, + / −, contador, cerrar sesión vacía todo
 
 ## Checklist Fase 2 (cerrada)
