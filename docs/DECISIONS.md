@@ -2,6 +2,19 @@
 
 Formato: fecha, decisión y por qué. Las decisiones nuevas van arriba.
 
+## 2026-10-02: Publicar = crear pausada → subir fotos → activar
+Las fotos se suben de a una (`POST .../images`) y la publicación recién se activa al final.
+**Por qué:** nunca aparece en el catálogo un producto sin fotos o a medio subir. Si una foto falla, la publicación queda pausada y la app reintenta solo lo que faltó, sin duplicarla. Una foto por request también mantiene cada request chico (la app las reduce a 1600 px y calidad 80, ~0,5 MB) y permite mostrar el progreso.
+
+## 2026-10-02: Las fotos subidas se re-codifican con GD
+Se valida el tipo real (finfo + getimagesize), se endereza según la orientación EXIF, se redimensiona a 1200 px + miniatura de 400 px, y se guarda como JPEG en `media/u/AAAA/MM/<aleatorio>.jpg`.
+**Por qué:** solo se sirve una imagen válida (un archivo disfrazado no sobrevive a la re-codificación) y **se descartan los metadatos EXIF, incluida la ubicación GPS** que muchos celulares guardan en las fotos. El directorio de media no ejecuta PHP ni lista su contenido (`.htaccess`).
+
+## 2026-10-02: Límite y bajas de publicaciones
+- Particulares: hasta 5 activas. Pausadas y vendidas no cuentan. Las tiendas no tendrán tope (Fase 6).
+- Eliminar es una baja lógica (`removed`): los pedidos que ya apuntan al producto siguen siendo consistentes. Las fotos de una publicación eliminada no se borran del disco (se podría limpiar más adelante con una tarea programada).
+- Publicar exige nombre y ciudad en el perfil; la ciudad del producto es la del vendedor.
+
 ## 2026-10-02: Pedidos por WhatsApp: el mensaje lo arma el servidor
 `POST /v1/orders` registra el pedido (con fotos de título y precio), quita el grupo del carrito y devuelve el enlace `wa.me` con el mensaje completo. La app solo abre ese enlace.
 **Por qué:** el número de pedido, el formato y el número del vendedor quedan en un solo lugar y son iguales en todas las versiones de la app.

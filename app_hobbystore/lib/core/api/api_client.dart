@@ -22,6 +22,8 @@ class ApiException implements Exception {
 /// en `X-Session-Token`, porque PHP-FPM en flamenco no reenvía `Authorization`.
 class ApiClient {
   static const _timeout = Duration(seconds: 15);
+  // Una foto (~0,5 MB) con datos móviles lentos.
+  static const _uploadTimeout = Duration(seconds: 60);
 
   final String baseUrl;
   final SessionStore sessionStore;
@@ -56,6 +58,23 @@ class ApiClient {
 
   Future<Map<String, dynamic>> delete(String path) => _send('DELETE', path);
 
+  /// Sube un archivo como multipart (campo [field]).
+  Future<Map<String, dynamic>> upload(
+    String path, {
+    required String field,
+    required List<int> bytes,
+    required String filename,
+  }) async {
+    final request = http.MultipartRequest('POST', Uri.parse('$baseUrl$path'))
+      ..headers.addAll(await _headers())
+      ..files.add(
+        http.MultipartFile.fromBytes(field, bytes, filename: filename),
+      );
+    // MultipartRequest arma su propio Content-Type con el boundary.
+    request.headers.remove('Content-Type');
+    return _dispatch(request, timeout: _uploadTimeout);
+  }
+
   Future<Map<String, dynamic>> _send(
     String method,
     String path, {
@@ -68,11 +87,17 @@ class ApiClient {
     }
     final request = http.Request(method, uri)..headers.addAll(await _headers());
     if (body != null) request.body = jsonEncode(body);
+    return _dispatch(request);
+  }
 
+  Future<Map<String, dynamic>> _dispatch(
+    http.BaseRequest request, {
+    Duration timeout = _timeout,
+  }) async {
     final http.Response response;
     try {
       response = await http.Response.fromStream(
-        await _client.send(request).timeout(_timeout),
+        await _client.send(request).timeout(timeout),
       );
     } on SocketException {
       throw const ApiException(0, 'Sin conexión. Revisa tu internet.');

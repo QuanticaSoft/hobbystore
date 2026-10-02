@@ -91,3 +91,24 @@ $router->get('/v1/orders', $withUser(static fn(PDO $pdo, int $userId) =>
 
 $router->patch('/v1/orders/{id}', $withUser(static fn(PDO $pdo, int $userId, string $id) =>
     OrdersController::updateStatus($pdo, $userId, $id)));
+
+// Mis publicaciones (vender).
+$router->get('/v1/my/products', $withUser(static fn(PDO $pdo, int $userId) =>
+    MyProductsController::index($pdo, $config, $userId)));
+
+$router->post('/v1/my/products', $withUser(static fn(PDO $pdo, int $userId) =>
+    MyProductsController::create($pdo, $config, $userId)));
+
+$router->patch('/v1/my/products/{id}', $withUser(static fn(PDO $pdo, int $userId, string $id) =>
+    MyProductsController::update($pdo, $config, $userId, $id)));
+
+$router->delete('/v1/my/products/{id}', $withUser(static fn(PDO $pdo, int $userId, string $id) =>
+    MyProductsController::destroy($pdo, $userId, $id)));
+
+$router->post('/v1/my/products/{id}/images', $withUser(static fn(PDO $pdo, int $userId, string $id) =>
+    MyProductsController::addImage($pdo, $config, $userId, $id)));
+
+$router->delete('/v1/my/products/{id}/images/{image_id}', $withUser(
+    static fn(PDO $pdo, int $userId, string $id, string $imageId) =>
+        MyProductsController::deleteImage($pdo, $config, $userId, $id, $imageId)
+));

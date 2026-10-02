@@ -16,4 +16,5 @@ return [
     ],
     'otp_session_url' => 'https://www.quanticasoft.com/otp/session.php',
     'media_base_url' => 'https://www.quanticasoft.com/hobbystore/media-staging', // .../media en prod
+    'media_dir' => '/webs/quanticasoft/hobbystore/media-staging', // .../media en prod
 ];

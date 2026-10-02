@@ -16,6 +16,8 @@ $defaults = [
     'otp_session_url' => 'mock',
     // null = se deriva del request (dev). En flamenco: URL del directorio de media del entorno.
     'media_base_url' => null,
+    // Dónde se guardan las fotos subidas (debe coincidir con media_base_url).
+    'media_dir' => __DIR__ . '/public/media',
     'auth_cache_seconds' => 600,
     'min_app_version' => '0.0.0',
 ];
