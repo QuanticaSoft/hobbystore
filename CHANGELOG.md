@@ -3,6 +3,10 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y [SemVer](https://semver.org/lang/es/).
 
 ## [Unreleased]
+
+## [0.6.0] - 2026-10-02
+Fase 6: tiendas y administración.
+
 ### Added
 - BD: migración `006_store_admin` (una tienda por usuario, nota de revisión, fechas).
 - API: `/v1/my/store` (solicitar, ver, editar, logo) y `/v1/admin/*` (tiendas: aprobar, suspender, destacar; banners: crear, ocultar, borrar; retirar productos), solo para `is_admin`.

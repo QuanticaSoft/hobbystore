@@ -1,6 +1,6 @@
 # Hobby Store: Progreso
 
-Última actualización: 2026-10-02 · Fase actual: **6: Tiendas + Admin** (en staging, falta probar en dispositivo)
+Última actualización: 2026-10-02 · Fase actual: **7: Publicación en tiendas** (por iniciar)
 
 ## Dónde quedamos
 - **Fase 5 cerrada: release `v0.5.0`** (2026-10-02).
