@@ -4,8 +4,11 @@ import 'package:provider/provider.dart';
 import '../../core/format/price.dart';
 import '../../core/widgets/error_retry.dart';
 import '../../core/widgets/network_picture.dart';
+import '../../core/api/api_client.dart';
+import '../admin/admin_repository.dart';
 import '../cart/add_to_cart_button.dart';
 import '../favorites/favorite_button.dart';
+import '../session/user_session.dart';
 import 'catalog_models.dart';
 import 'catalog_repository.dart';
 import 'store_screen.dart';
@@ -29,6 +32,42 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     _product = _load();
   }
 
+  Future<void> _removeAsAdmin(ProductDetail product) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text('¿Retirar "${product.title}"?'),
+        content: const Text(
+          'Deja de mostrarse para todos. Úsalo para publicaciones que '
+          'infringen las reglas; avisa al vendedor por WhatsApp.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text('Cancelar'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: const Text('Retirar'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+
+    final navigator = Navigator.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      await context.read<AdminRepository>().removeProduct(product.id);
+      navigator.pop();
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Publicación retirada.')),
+      );
+    } on ApiException catch (e) {
+      messenger.showSnackBar(SnackBar(content: Text(e.message)));
+    }
+  }
+
   Future<ProductDetail> _load() =>
       context.read<CatalogRepository>().product(widget.productId);
 
@@ -42,6 +81,22 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           appBar: AppBar(
             actions: [
               if (product != null) FavoriteButton(productId: product.id),
+              if (product != null &&
+                  context.select<UserSession, bool>(
+                    (session) => session.user?.isAdmin ?? false,
+                  ))
+                PopupMenuButton<String>(
+                  tooltip: 'Moderación',
+                  // onSelected corre con el menú ya cerrado: el diálogo de
+                  // confirmación no se cierra junto con el menú.
+                  onSelected: (_) => _removeAsAdmin(product),
+                  itemBuilder: (_) => const [
+                    PopupMenuItem(
+                      value: 'remove',
+                      child: Text('Retirar publicación (admin)'),
+                    ),
+                  ],
+                ),
             ],
           ),
           body: product != null

@@ -151,18 +151,28 @@ class _LimitBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final atLimit = page.activeCount >= page.activeLimit;
+    final limit = page.activeLimit;
+    if (limit == null) {
+      return const Card(
+        margin: EdgeInsets.zero,
+        child: ListTile(
+          leading: Icon(Icons.storefront_outlined),
+          title: Text('Publicas como tienda'),
+          subtitle: Text('Sin límite de publicaciones activas.'),
+        ),
+      );
+    }
+    final atLimit = page.activeCount >= limit;
     return Card(
       margin: EdgeInsets.zero,
       child: ListTile(
         leading: Icon(atLimit ? Icons.info_outline : Icons.sell_outlined),
-        title: Text(
-          '${page.activeCount} de ${page.activeLimit} publicaciones activas',
-        ),
+        title: Text('${page.activeCount} de $limit publicaciones activas'),
         subtitle: Text(
           atLimit
               ? 'Llegaste al máximo. Pausa o marca como vendida alguna para publicar otra.'
-              : 'Como vendedor particular puedes tener hasta ${page.activeLimit} activas.',
+              : 'Como vendedor particular puedes tener hasta $limit activas. '
+                    '¿Vendes seguido? Solicita tu tienda en Perfil.',
         ),
       ),
     );

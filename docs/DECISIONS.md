@@ -2,6 +2,19 @@
 
 Formato: fecha, decisión y por qué. Las decisiones nuevas van arriba.
 
+## 2026-10-02: Tiendas: una por usuario, y al aprobarla todo pasa a la tienda
+- "Quiero ser tienda" crea la tienda en `pending`. No se ve en el catálogo hasta que el admin la aprueba.
+- **Al aprobarla, todas las publicaciones del dueño pasan a la tienda** y lo nuevo que publique sale como tienda, sin tope.
+  **Por qué:** una sola identidad de vendedor por persona; evita la mezcla confusa "parte particular, parte tienda" en el carrito, los pedidos y el límite de 5.
+- **Suspender** oculta la tienda y sus productos sin borrarlos; reactivarla los vuelve a mostrar. Con la tienda suspendida, lo nuevo también se publica como tienda (oculto): así la suspensión no se esquiva publicando como particular.
+- La nota de revisión (`review_note`) es visible para el dueño.
+- El slug sale del nombre (sin tildes ni símbolos, con sufijo si se repite) y no cambia al renombrar la tienda, así los enlaces compartidos siguen sirviendo.
+
+## 2026-10-02: Admin solo desde la BD
+`users.is_admin` se marca a mano en la BD (staging y prod). No hay endpoint ni pantalla para volverse admin.
+**Por qué:** el permiso más alto no debe poder escalarse desde la app. El número del admin **no se versiona** (el repo es público).
+- Moderación de productos: el admin retira la publicación (`removed`) desde el detalle y avisa al vendedor por WhatsApp.
+
 ## 2026-10-02: Publicar = crear pausada → subir fotos → activar
 Las fotos se suben de a una (`POST .../images`) y la publicación recién se activa al final.
 **Por qué:** nunca aparece en el catálogo un producto sin fotos o a medio subir. Si una foto falla, la publicación queda pausada y la app reintenta solo lo que faltó, sin duplicarla. Una foto por request también mantiene cada request chico (la app las reduce a 1600 px y calidad 80, ~0,5 MB) y permite mostrar el progreso.

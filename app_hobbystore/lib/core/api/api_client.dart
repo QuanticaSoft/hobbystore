@@ -58,15 +58,17 @@ class ApiClient {
 
   Future<Map<String, dynamic>> delete(String path) => _send('DELETE', path);
 
-  /// Sube un archivo como multipart (campo [field]).
+  /// Sube un archivo como multipart (campo [field]), con [fields] de texto opcionales.
   Future<Map<String, dynamic>> upload(
     String path, {
     required String field,
     required List<int> bytes,
     required String filename,
+    Map<String, String> fields = const {},
   }) async {
     final request = http.MultipartRequest('POST', Uri.parse('$baseUrl$path'))
       ..headers.addAll(await _headers())
+      ..fields.addAll(fields)
       ..files.add(
         http.MultipartFile.fromBytes(field, bytes, filename: filename),
       );

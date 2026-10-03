@@ -4,6 +4,20 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y 
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-10-02
+Fase 6: tiendas y administración.
+
+### Added
+- BD: migración `006_store_admin` (una tienda por usuario, nota de revisión, fechas).
+- API: `/v1/my/store` (solicitar, ver, editar, logo) y `/v1/admin/*` (tiendas: aprobar, suspender, destacar; banners: crear, ocultar, borrar; retirar productos), solo para `is_admin`.
+- API: al aprobar una tienda, las publicaciones del dueño pasan a la tienda; las tiendas publican sin tope.
+- App: Perfil › "Mi tienda" (sin tienda, en revisión, aprobada o suspendida con la nota del equipo) y formulario con logo, WhatsApp y formas de entrega.
+- App: Perfil › "Administración" (solo admins): pestañas Tiendas y Banners, WhatsApp al dueño. "Retirar publicación (admin)" en el detalle de producto.
+
+### Fixed
+- Demo: `seed.sh` fallaba si las tiendas de la demo tenían pedidos.
+- App: los diálogos con campo de texto liberaban el controlador antes de terminar su animación de cierre.
+
 ## [0.5.0] - 2026-10-02
 Fase 5: vender (publicaciones de particulares).
 

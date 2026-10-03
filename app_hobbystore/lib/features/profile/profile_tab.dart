@@ -4,9 +4,11 @@ import 'package:provider/provider.dart';
 
 import '../../core/api/api_client.dart';
 import '../../core/widgets/error_retry.dart';
+import '../admin/admin_screen.dart';
 import '../orders/order_models.dart';
 import '../orders/orders_screen.dart';
 import '../sell/my_products_screen.dart';
+import '../store/my_store_screen.dart';
 import '../session/log_out.dart';
 import '../session/user.dart';
 import '../session/user_session.dart';
@@ -138,6 +140,16 @@ class _ProfileFormState extends State<_ProfileForm> {
             child: Column(
               children: [
                 ListTile(
+                  leading: const Icon(Icons.storefront_outlined),
+                  title: const Text('Mi tienda'),
+                  subtitle: const Text('Solicita o administra tu tienda'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const MyStoreScreen()),
+                  ),
+                ),
+                const Divider(height: 1),
+                ListTile(
                   leading: const Icon(Icons.sell_outlined),
                   title: const Text('Mis publicaciones'),
                   subtitle: const Text('Vende tus modelos y accesorios'),
@@ -164,6 +176,21 @@ class _ProfileFormState extends State<_ProfileForm> {
               ],
             ),
           ),
+          if (widget.user.isAdmin) ...[
+            const SizedBox(height: 16),
+            Card(
+              margin: EdgeInsets.zero,
+              child: ListTile(
+                leading: const Icon(Icons.admin_panel_settings_outlined),
+                title: const Text('Administración'),
+                subtitle: const Text('Tiendas y banners'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => Navigator.of(
+                  context,
+                ).push(MaterialPageRoute(builder: (_) => const AdminScreen())),
+              ),
+            ),
+          ],
           const SizedBox(height: 32),
           OutlinedButton.icon(
             onPressed: () => confirmLogOut(context, widget.auth),

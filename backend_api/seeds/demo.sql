@@ -2,6 +2,9 @@
 -- Idempotente: borra la demo anterior, identificada por los teléfonos +591600000XX
 -- y las imágenes bajo seed/, y la vuelve a crear.
 
+-- Los pedidos a vendedores de la demo apuntan a sus tiendas: se borran antes
+-- (order_items cae en cascada) para poder borrar y recrear las tiendas.
+DELETE FROM orders   WHERE seller_user_id IN (SELECT id FROM users WHERE phone LIKE '+591600000__');
 DELETE FROM products WHERE seller_user_id IN (SELECT id FROM users WHERE phone LIKE '+591600000__');
 DELETE FROM stores   WHERE owner_user_id  IN (SELECT id FROM users WHERE phone LIKE '+591600000__');
 DELETE FROM banners  WHERE image_path LIKE 'seed/%';

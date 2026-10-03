@@ -15,6 +15,8 @@ final class ImageUpload
     private const MAX_PIXELS = 25_000_000;
     private const FULL_SIZE = 1200;
     private const THUMB_SIZE = 400;
+    private const LOGO_SIZE = 512;
+    private const BANNER_SIZE = 1600;
     private const JPEG_QUALITY = 82;
 
     private const MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
@@ -25,8 +27,30 @@ final class ImageUpload
     /** @return array{path: string, thumb_path: string} rutas relativas a media_dir */
     public static function storeProductPhoto(mixed $file, string $mediaDir): array
     {
+        return self::store($file, $mediaDir, ['path' => [self::FULL_SIZE, ''], 'thumb_path' => [self::THUMB_SIZE, '_t']]);
+    }
+
+    /** Logo de tienda: se muestra en círculos chicos. */
+    public static function storeLogo(mixed $file, string $mediaDir): string
+    {
+        return self::store($file, $mediaDir, ['path' => [self::LOGO_SIZE, '']])['path'];
+    }
+
+    /** Banner del carrusel del Home: ancho completo de la pantalla. */
+    public static function storeBanner(mixed $file, string $mediaDir): string
+    {
+        return self::store($file, $mediaDir, ['path' => [self::BANNER_SIZE, '']])['path'];
+    }
+
+    /**
+     * Valida, endereza y guarda la imagen en una o más medidas.
+     * @param array<string, array{int, string}> $variants clave => [lado máximo, sufijo del archivo]
+     * @return array<string, string> clave => ruta relativa a media_dir
+     */
+    private static function store(mixed $file, string $mediaDir, array $variants): array
+    {
         if (!is_array($file) || !isset($file['error']) || is_array($file['error'])) {
-            Response::error('Falta la foto.');
+            Response::error('Falta la imagen.');
         }
         if ($file['error'] === UPLOAD_ERR_INI_SIZE || $file['error'] === UPLOAD_ERR_FORM_SIZE
             || ($file['size'] ?? 0) > self::MAX_BYTES) {
@@ -64,9 +88,11 @@ final class ImageUpload
         }
 
         $name = bin2hex(random_bytes(12));
-        $paths = ['path' => "$relativeDir/$name.jpg", 'thumb_path' => "$relativeDir/{$name}_t.jpg"];
-        self::saveJpeg($image, self::FULL_SIZE, rtrim($mediaDir, '/') . '/' . $paths['path']);
-        self::saveJpeg($image, self::THUMB_SIZE, rtrim($mediaDir, '/') . '/' . $paths['thumb_path']);
+        $paths = [];
+        foreach ($variants as $key => [$maxSide, $suffix]) {
+            $paths[$key] = "$relativeDir/$name$suffix.jpg";
+            self::saveJpeg($image, $maxSide, rtrim($mediaDir, '/') . '/' . $paths[$key]);
+        }
         imagedestroy($image);
 
         return $paths;

@@ -74,7 +74,9 @@ class MyProduct {
 class MyProductsPage {
   final List<MyProduct> products;
   final int activeCount;
-  final int activeLimit;
+
+  /// null: publica como tienda, sin tope.
+  final int? activeLimit;
 
   const MyProductsPage({
     required this.products,
@@ -87,7 +89,7 @@ class MyProductsPage {
         .map((product) => MyProduct.fromJson(product as Map<String, dynamic>))
         .toList(),
     activeCount: json['active_count'] as int,
-    activeLimit: json['active_limit'] as int,
+    activeLimit: json['active_limit'] as int?,
   );
 }
 
